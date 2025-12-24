@@ -1,0 +1,80 @@
+mutation SeedDatabase @transaction @auth(level: NO_ACCESS) {
+  user_insertMany(data: [
+    {
+      id: "67c8450d-a316-4881-ba96-09b608272a9a",
+      username: "seeduser1",
+      email: "seeduser1@example.com",
+      createdAt: "2024-04-26T12:00:00Z",
+      displayName: "Seed User One"
+    },
+    {
+      id: "b8a912e9-3b5a-47c9-a20e-f5d8b5a39b2b",
+      username: "seeduser2",
+      email: "seeduser2@example.com",
+      createdAt: "2024-04-26T13:00:00Z",
+      displayName: "Seed User Two"
+    }
+  ])
+  image_insertMany(data: [
+    {
+      id: "c9c05f22-e994-4f92-a01d-9b4a8d9f2d3c",
+      userId: "67c8450d-a316-4881-ba96-09b608272a9a",
+      aiModel: "DALL-E",
+      aspectRatio: "1:1",
+      createdAt: "2024-04-26T14:00:00Z",
+      description: "A generated image for seed user one",
+      imageUrl: "http://example.com/image1.jpg",
+      prompt: "Generate a sample image"
+    },
+    {
+      id: "3a3b0d0b-d71e-4e3c-a48e-6a1d5a5b1c6c",
+      userId: "b8a912e9-3b5a-47c9-a20e-f5d8b5a39b2b",
+      aiModel: "Midjourney",
+      aspectRatio: "16:9",
+      createdAt: "2024-04-26T15:00:00Z",
+      description: "A generated image for seed user two",
+      imageUrl: "http://example.com/image2.jpg",
+      prompt: "Generate another sample image"
+    }
+  ])
+  comment_insertMany(data: [
+    {
+      id: "1e6d6a0f-e1e9-4b7d-a71c-3b8b3a7a6a6a",
+      userId: "67c8450d-a316-4881-ba96-09b608272a9a",
+      imageId: "c9c05f22-e994-4f92-a01d-9b4a8d9f2d3c",
+      createdAt: "2024-04-26T16:00:00Z",
+      text: "This is a seed comment from user one on image one"
+    },
+    {
+      id: "2f7e7b1a-f3f0-4f5d-b5e8-9a7c5b6d4e8f",
+      userId: "b8a912e9-3b5a-47c9-a20e-f5d8b5a39b2b",
+      imageId: "3a3b0d0b-d71e-4e3c-a48e-6a1d5a5b1c6c",
+      createdAt: "2024-04-26T17:00:00Z",
+      text: "This is a seed comment from user two on image two"
+    }
+  ])
+  like_insertMany(data: [
+    {
+      userId: "67c8450d-a316-4881-ba96-09b608272a9a",
+      imageId: "c9c05f22-e994-4f92-a01d-9b4a8d9f2d3c",
+      createdAt: "2024-04-26T18:00:00Z"
+    },
+    {
+      userId: "b8a912e9-3b5a-47c9-a20e-f5d8b5a39b2b",
+      imageId: "3a3b0d0b-d71e-4e3c-a48e-6a1d5a5b1c6c",
+      createdAt: "2024-04-26T19:00:00Z"
+    }
+  ])
+  follow_insertMany(data: [
+    {
+      followerId: "67c8450d-a316-4881-ba96-09b608272a9a",
+      followeeId: "b8a912e9-3b5a-47c9-a20e-f5d8b5a39b2b",
+      createdAt: "2024-04-26T20:00:00Z"
+    },
+    {
+      followerId: "b8a912e9-3b5a-47c9-a20e-f5d8b5a39b2b",
+      followeeId: "67c8450d-a316-4881-ba96-09b608272a9a",
+      createdAt: "2024-04-26T21:00:00Z"
+    }
+  ])
+}

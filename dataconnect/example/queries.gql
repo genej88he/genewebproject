@@ -1,0 +1,24 @@
+mutation CreateUser($username: String!, $email: String!, $createdAt: Timestamp!, $displayName: String!) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  user_insert(data: {username: $username, email: $email, createdAt: $createdAt, displayName: $displayName})
+}
+
+query GetImage($id: UUID!) @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  image(id: $id) {
+    id
+    imageUrl
+    description
+  }
+}
+
+mutation LikeImage($imageId: UUID!) @auth(level: USER) {
+  like_insert(data: {imageId: $imageId, userId_expr: "auth.uid", createdAt_expr: "request.time"})
+}
+
+query ListUsers @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  users {
+    id
+    username
+    displayName
+    profilePictureUrl
+  }
+}
