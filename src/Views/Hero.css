@@ -1,0 +1,49 @@
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 80px 20px;
+  background: transparent !important;
+}
+
+.hero-main-title {
+  font-size: 5rem;
+  font-weight: 850;
+  letter-spacing: -3px;
+  max-width: 950px;
+  line-height: 1.05;
+  color: #1a1a1a;
+  margin-bottom: 24px;
+}
+
+.hero-description {
+  font-size: 1.25rem;
+  color: #4b5563;
+  max-width: 650px;
+  line-height: 1.5;
+  margin-bottom: 40px;
+}
+
+.hero-action-area {
+  display: flex;
+  gap: 16px;
+}
+
+.btn-black {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 50px;
+  font-weight: 600;
+}
+
+.btn-light {
+  background: #e5e7eb;
+  color: #000;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 50px;
+  font-weight: 600;
+}
