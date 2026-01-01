@@ -1,5 +1,6 @@
 import React from 'react';
 import './Hero.css';
+import { Link } from 'react-router-dom';
 
 const Hero = () => {
   return (
@@ -10,7 +11,9 @@ const Hero = () => {
         From raw notes to polished projects, Mango Seed keeps your mind organized.
       </p>
       <div className="hero-action-area">
-        <button className="btn-black">Try Mango Seed free</button>
+        <Link to="/workspace" className="btn-black">
+          Try Mango Seed free
+        </Link>
         <button className="btn-light">See features</button>
       </div>
     </section>

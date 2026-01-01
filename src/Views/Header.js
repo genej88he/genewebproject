@@ -1,17 +1,21 @@
 import React from 'react';
 import './Header.css';
 import mangoLogo from '../assets/images/mangoseed512.png';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
     <header className="header-container">
-      <div className="header-left">
-        <img src={mangoLogo} alt="Mango Seed" className="brand-logo" />
-        <div className="brand-info">
-          <span className="brand-name">Mango Seed</span>
-          <span className="brand-slogan">Nurture your thoughts</span>
+      <Link to="/" className="header-brand-link">
+        <div className="header-left">
+          <img src={mangoLogo} alt="Mango Seed" className="brand-logo" />
+          <div className="brand-info">
+            <span className="brand-name">Mango Seed</span>
+            <span className="brand-slogan">Nurture your thoughts</span>
+          </div>
         </div>
-      </div>
+      </Link>
+      
 
       <nav className="header-center">
         <a href="#features" className="nav-link">Features</a>
@@ -22,7 +26,9 @@ const Header = () => {
       </nav>
 
       <div className="header-right">
-        <button className="btn-cta">Try Mango Seed free</button>
+        <Link to="/workspace" className="btn-black">
+          Try Mango Seed free
+        </Link>
       </div>
     </header>
   );

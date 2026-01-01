@@ -1,0 +1,18 @@
+.workspace-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* Using your exact Home Page gradient */
+    background: linear-gradient(
+      180deg, 
+      #fff3e0 0%,   /* Soft Mango/Cream */
+      #ffffff 50%,  /* Neutral White */
+      #e8f5e9 100%  /* Soft Mint/Leaf Green */
+    );
+    background-attachment: fixed;
+  }
+  
+  .canvas-wrapper {
+    flex: 1;
+  }

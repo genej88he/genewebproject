@@ -37,13 +37,15 @@
   padding: 16px 32px;
   border-radius: 50px;
   font-weight: 600;
+  text-decoration: none;
 }
 
 .btn-light {
   background: #e5e7eb;
   color: #000;
   border: none;
-  padding: 16px 32px;
+  padding: 14px 28px;
   border-radius: 50px;
-  font-weight: 600;
+  font-weight: 700;
+  cursor: pointer;
 }

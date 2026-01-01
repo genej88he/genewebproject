@@ -5,6 +5,15 @@
   align-items: center;
   padding: 30px 80px;
   background: transparent;
+  background-color: transparent;
+}
+
+.header-brand-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 
 .header-left {
@@ -64,12 +73,14 @@
   flex: 1;
 }
 
-.btn-cta {
-  background: #000;
-  color: #fff;
-  border: none;
-  padding: 14px 28px;
-  border-radius: 50px;
-  font-weight: 700;
-  cursor: pointer;
+.btn-black {
+  background-color: #000 !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  border: none !important;
+  padding: 14px 28px !important;
+  border-radius: 50px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  font-size: 14px;
 }
