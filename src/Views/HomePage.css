@@ -5,9 +5,9 @@
   
   .top-fold-wrapper {
     background: linear-gradient(
-      180deg, 
-      #fff3e0 0%,   
-      #ffffff 50%,  
+      135deg, 
+      #f3d4a3 0%,   
+      #fcffe4 50%,  
       #e8f5e9 100%   
     );
     width: 100%;
@@ -17,7 +17,9 @@
   }
   
   .next-section {
-    background-color: #ffffff;
+    background-color: #FAFAFA; /* A very light, warm grey/white */
+  border-top: 1px solid rgba(0,0,0,0.03); /* Tiny divider line */
+  padding: 100px 10%;
     padding: 100px 20px;
     text-align: center;
   }

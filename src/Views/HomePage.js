@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './HomePage.css';
 import Header from './Header.js';
 import Hero from './Hero.js';
+import Features from './Features.js'
 
 import mangoCup from '../assets/images/mangoseed.png';
 import mangoLogo from '../assets/images/mangoseed512.png';
@@ -17,7 +18,7 @@ const HomePage = () => {
 
       {/* Other sections will have the default background */}
       <section className="next-section">
-        <h2>Rest of the page</h2>
+        <Features />
       </section>
     </div>
   );
