@@ -1,1 +1,2 @@
-I like balls
+Nurture your thoughts.
+Mango Seed is a minimalist, digital workspace designed for deep thinkers and creative note-takers. It bridges the gap between the organic feel of a paper notebook and the power of a digital productivity suite.

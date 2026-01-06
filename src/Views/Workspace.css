@@ -1,18 +1,65 @@
+/* Main Layout */
 .workspace-container {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    /* Using your exact Home Page gradient */
-    background: linear-gradient(
-      180deg, 
-      #fff3e0 0%,   /* Soft Mango/Cream */
-      #ffffff 50%,  /* Neutral White */
-      #e8f5e9 100%  /* Soft Mint/Leaf Green */
-    );
-    background-attachment: fixed;
-  }
-  
-  .canvas-wrapper {
-    flex: 1;
-  }
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #fffcf7;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Title and Button Section */
+.workspace-controls {
+  display: flex;
+  align-items: center;
+  padding: 20px 50px;
+  gap: 25px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.welcome-text {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  color: #444;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Add Seed Button */
+.add-seed-btn {
+  padding: 10px 22px;
+  background-color: #000;
+  color: white;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.add-seed-btn:hover {
+  background-color: #333;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* The Canvas Area with Dot Grid */
+.canvas-wrapper {
+  flex-grow: 1;
+  background-image: radial-gradient(#d1d1d1 1px, transparent 1px);
+  background-size: 40px 40px; /* Adjust size of the grid */
+}
+
+/* Footer Hint */
+.workspace-hint {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #aaa;
+  font-size: 13px;
+  pointer-events: none;
+}
