@@ -61,5 +61,112 @@
   transform: translateX(-50%);
   color: #aaa;
   font-size: 13px;
-  pointer-events: none;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6); /* This dims the screen */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; /* High number to stay above Konva Stage */
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 320px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  color: #333;
+  font-family: sans-serif;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin: 1.5rem 0;
+  border: 2px solid #eee;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.modal-content input:focus {
+  border-color: #ff8c00; /* Mango Orange focus */
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-actions button {
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.cancel-btn {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.confirm-btn {
+  background: #ff8c00;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background: #e67e00;
+}
+
+/* Update the existing modal content for Note Taking */
+.modal-content.note-editor {
+  width: 80vw;
+  max-width: 800px;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+}
+
+.note-title-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: none;
+  border-bottom: 2px solid #ff8c00;
+  margin-bottom: 15px;
+  outline: none;
+}
+
+.note-body-textarea {
+  flex-grow: 1; /* Makes textarea take up available space */
+  width: 100%;
+  padding: 15px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  resize: none; /* Prevents manual resizing */
+  outline: none;
+}
+
+.note-body-textarea:focus {
+  border-color: #ff8c00;
 }
