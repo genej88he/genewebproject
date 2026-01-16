@@ -1,10 +1,12 @@
 /* Main Layout */
 .workspace-container {
+  padding-top: 120px; 
+  min-height: 100vh;
+  background-color: #fcfaf7; /* A very light off-white/cream for a paper feel */
   width: 100vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #fffcf7;
   overflow: hidden;
   position: relative;
 }
@@ -169,4 +171,76 @@
 
 .note-body-textarea:focus {
   border-color: #ff8c00;
+}
+
+/* Container for the two buttons */
+.type-selector {
+  display: flex;
+  gap: 8px;
+  margin: 15px 0;
+  background-color: #f0f0f0;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+/* Base style for both buttons */
+.type-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  background-color: transparent;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Hover effect for the unselected button */
+.type-btn:hover {
+  background-color: #e5e5e5;
+}
+
+/* The "Active" state when one is selected */
+.type-btn.active {
+  background-color: #ff9f43; /* Your Mango Orange */
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.right-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.delete-btn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #d9363e;
 }

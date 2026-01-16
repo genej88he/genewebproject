@@ -8,8 +8,9 @@ import Header from './Header.js';
 import './Workspace.css';
 
 import docImg from '../assets/images/orangedoc.png';
+// import notebookImg from '../assets/images/notebook.png';
 
-const MangoSeed = ({ seed, onDragEnd, onDblClick }) => {
+const MangoSeed = ({ seed, onDragEnd, onDblClick, onClick }) => {
   // 2. This hook handles the loading logic for Konva
   const [image] = useImage(docImg); 
 
@@ -18,8 +19,10 @@ const MangoSeed = ({ seed, onDragEnd, onDblClick }) => {
       x={seed.x} 
       y={seed.y} 
       draggable 
+      listening={true}
       onDragEnd={onDragEnd}
       onDblClick={onDblClick}
+      onClick={onClick}
     >
       <Image
         image={image}
@@ -54,12 +57,14 @@ const Workspace = ({seeds, setSeeds}) => {
   const [currentInput, setCurrentInput] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [currentContent, setCurrentContent] = useState("");
+  const [selectedType, setSelectedType] = useState('doc');
 
   const openAddModal = () => {
     setEditingId(null);
     setCurrentInput("");
     setIsModalOpen(true);
     setCurrentContent("");
+    setSelectedType("doc");
   };
 
   const openRenameModal = (id, text) => {
@@ -69,12 +74,13 @@ const Workspace = ({seeds, setSeeds}) => {
       setCurrentInput(selectedSeed.text);
       setIsModalOpen(true);
       setCurrentContent(selectedSeed.content || "");
+      setSelectedType(selectedType || "doc");
     }   
   };
 
   const handleConfirm = () => {
     if (editingId) {
-      setSeeds(seeds.map(s => s.id === editingId ? { ...s, text: currentInput, content: currentContent } : s));
+      setSeeds(seeds.map(s => s.id === editingId ? { ...s, text: currentInput, content: currentContent, type: selectedType} : s));
       setIsModalOpen(false);
     } else {
       const newId = uuidv4();
@@ -83,13 +89,23 @@ const Workspace = ({seeds, setSeeds}) => {
         x: 150 + Math.random() * 100,
         y: 150 + Math.random() * 100,
         text: currentInput || 'Untitled',
-        content: currentContent
+        content: currentContent,
+        type: selectedType
       };
       setSeeds([...seeds, newSeed]);
       setIsModalOpen(false);
-      navigate(`/note/${newId}`);
+      const targetPath = selectedType === 'notebook' ? `/notebook/${newId}` : `/doc/${newId}`
+      navigate(targetPath);
     }
   };
+
+  const handleDelete = () => {
+    if (editingId) {
+      const updated = seeds.filter(s => s.id !== editingId);
+      setSeeds(updated);
+      setIsModalOpen(false);
+    }
+  }
 
   // Function to create a new seed
   // const addFile = () => {
@@ -122,66 +138,91 @@ const Workspace = ({seeds, setSeeds}) => {
     <div className="workspace-container">
       <Header />
       
-      {/* Control Bar: Title + Button */}
-      <div className="workspace-controls">
-        <h2 className="welcome-text">Welcome to your Mango Seed Workspace</h2>
-        <button className="add-seed-btn" onClick={openAddModal}>
-          + Add File
-        </button>
-      </div>
+    {/* Control Bar: Title + Button */}
+    <div className="workspace-controls">
+      <h2 className="welcome-text">Welcome to your Mango Seed Workspace</h2>
+      <button className="add-seed-btn" onClick={openAddModal}>
+        + Add File
+      </button>
+    </div>
 
-      <div className="canvas-wrapper">
-        {/* We subtract 150px to account for Header + Control Bar height */}
-        <Stage width={window.innerWidth} height={window.innerHeight - 150}>
-          <Layer>
-            {seeds.map((seed) => (
-              <MangoSeed 
-              key={seed.id} 
-              seed={seed} 
-              onDragEnd={(e) => {
-                const updated = seeds.map(s => 
-                  s.id === seed.id ? { ...s, x: e.target.x(), y: e.target.y() } : s
-                );
-                setSeeds(updated);
-              }} 
-              onClick={() => openRenameModal(seed.id)}
-              onDblClick = {() => navigate(`/note/${seed.id}`)}
-            />
-            ))}
-          </Layer>
-        </Stage>
-      </div>
+    <div className="canvas-wrapper">
+      {/* We subtract 150px to account for Header + Control Bar height */}
+      <Stage width={window.innerWidth} height={window.innerHeight - 150}>
+        <Layer>
+          {seeds.map((seed) => (
+            <MangoSeed 
+            key={seed.id} 
+            seed={seed} 
+            onClick={() => openRenameModal(seed.id)}
+            onDragEnd={(e) => {
+              const updated = seeds.map(s => 
+                s.id === seed.id ? { ...s, x: e.target.x(), y: e.target.y() } : s
+              );
+              setSeeds(updated);
+            }} 
+            onDblClick = {() =>  {
+              const path = seed.type === 'notebook' ? `/notebook/${seed.id}` : `/note/${seed.id}`;
+              navigate(path)
+            }}
+          />
+          ))}
+        </Layer>
+      </Stage>
+    </div>
 
-      {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>{editingId ? "Rename Seed" : "New File Name"}</h3>
-            <input 
-              type="text" 
-              value={currentInput} 
-              onChange={(e) => setCurrentInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
-              autoFocus
-            />
-            {/* <textarea 
-              className="note-body-textarea"
-              placeholder="Start typing your lecture notes here..."
-              value={currentContent}
-              onChange={(e) => setCurrentContent(e.target.value)}
-            /> */}
-            <div className="modal-actions">
+    {isModalOpen && (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h3>{editingId ? "Rename Seed" : "New File Name"}</h3>
+          <div className="type-selector">
+            <button 
+              className={`type-btn ${selectedType === 'doc' ? 'active' : ''}`}
+              onClick={() => setSelectedType('doc')}
+            >
+              Text Doc
+            </button>
+            <button 
+              className={`type-btn ${selectedType === 'notebook' ? 'active' : ''}`}
+              onClick={() => setSelectedType('notebook')}
+            >
+              Notebook
+            </button>
+          </div>
+
+          <input 
+            type="text" 
+            value={currentInput} 
+            onChange={(e) => setCurrentInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
+            autoFocus
+          />
+
+
+          {/* <textarea 
+            className="note-body-textarea"
+            placeholder="Start typing your lecture notes here..."
+            value={currentContent}
+            onChange={(e) => setCurrentContent(e.target.value)}
+          /> */}
+          <div className="modal-actions">
+            <div className="left-actions">
+              {editingId && (
+                <button className="delete-btn" onClick={handleDelete}>
+                  Delete
+                </button>
+              )}
+            </div>
+            <div className="right-actions">
               <button className="cancel-btn" onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button className="confirm-btn" onClick={handleConfirm}>{editingId ? "Save Name" : "Create & Open"}</button>
+              <button className="confirm-btn" onClick={handleConfirm}>
+                  {editingId ? "Save Changes" : "Create & Open"}
+              </button>
             </div>
           </div>
         </div>
-      )}
-
-
-
-
-
-
+      </div>
+    )}
     </div>
   );
 };

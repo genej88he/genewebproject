@@ -4,8 +4,26 @@
   justify-content: space-between;
   align-items: center;
   padding: 30px 80px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
   background: transparent;
-  background-color: transparent;
+  transition: all 0.3s ease-in-out;
+}
+
+.header-container.scrolled {
+  padding: 15px 80px; /* Shrinks the header height slightly when scrolling */
+  background: rgba(255, 255, 255, 0.4); 
+  /* This is the secret: it blurs the background behind the header */
+  backdrop-filter: blur(12px); 
+  -webkit-backdrop-filter: blur(12px); /* For Safari support */
+  
+  /* A very thin border to define the edge without a heavy shadow */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Adds depth like Goodnotes */
 }
 
 .header-brand-link {
@@ -26,8 +44,13 @@
 }
 
 .brand-logo {
-  height: 100px; /* Increased size to solve the 'too small' issue */
+  height: 60px; /* Increased size to solve the 'too small' issue */
   width: auto;
+  transition: height 0.3s ease;
+}
+
+.header-container.scrolled .brand-logo {
+  height: 45px;
 }
 
 .brand-info {
@@ -78,9 +101,13 @@
   color: #ffffff !important;
   text-decoration: none !important;
   border: none !important;
-  padding: 14px 28px !important;
+  padding: 12px 24px !important;
   border-radius: 50px !important;
   font-weight: 700 !important;
   cursor: pointer !important;
   font-size: 14px;
+}
+
+.btn-black:hover {
+  transform: scale(1.05); /* Adds a little pop on hover */
 }
