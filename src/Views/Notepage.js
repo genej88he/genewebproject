@@ -1,26 +1,27 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import './Notepage.css';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const Notepage = ({ seeds, setSeeds }) => {
-    const { seedId } = useParams(); // Gets the ID from the URL
+    const { seedId } = useParams();
     const navigate = useNavigate();
-  
-    // Find the specific seed data from the master list
     const currentSeed = seeds.find(s => s.id === seedId);
-  
-    const handleTextChange = (e) => {
-      setSeeds(seeds.map(s => 
-        s.id === seedId ? { ...s, content: e.target.value } : s
-      ));
-    };
+    // 1. Use local state for the "typing" experience
+    const [content, setContent] = useState(currentSeed?.content || "");
+
+    useEffect(() => {
+        setSeeds(prevSeeds => 
+            prevSeeds.map(s => s.id === seedId ? { ...s, content: content } : s)
+        );
+    }, [content, seedId, setSeeds]);
   
     if (!currentSeed) {
-      return (
-        <div style={{ padding: '20px' }}>
-          <h2>Note not found!</h2>
-          <button onClick={() => navigate('/workspace')}>Return to Workspace</button>
-        </div>
-      );
+        return (
+            <div style={{ padding: '20px' }}>
+                <h2>Note not found!</h2>
+                <button onClick={() => navigate('/workspace')}>Return to Workspace</button>
+            </div>
+        );
     }
   
     return (
@@ -32,8 +33,8 @@ const Notepage = ({ seeds, setSeeds }) => {
         <textarea 
           style={{ width: '100%', height: '400px', marginTop: '20px', padding: '15px', fontSize: '18px' }}
           placeholder="Write your notes here..."
-          value={currentSeed.content}
-          onChange={handleTextChange}
+          value={content} 
+          onChange={(e) => setContent(e.target.value)}
         />
       </div>
     );

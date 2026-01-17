@@ -4,7 +4,7 @@ import HomePage from './Views/HomePage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Workspace from './Views/Workspace';
 import Notepage from './Views/Notepage';
-
+import Textdoc from './Views/Textdoc';
 function App() {
   const [seeds, setSeeds] = useState(() => {
     const savedSeeds = localStorage.getItem('mango-seeds');
@@ -36,6 +36,11 @@ function App() {
           <Route 
             path="/note/:seedId" 
             element={<Notepage seeds={seeds} setSeeds={setSeeds} />} 
+          />
+
+          <Route
+            path="/doc/:seedId"
+            element={<Textdoc seeds={seeds} setSeeds={setSeeds} />}
           />
           
           

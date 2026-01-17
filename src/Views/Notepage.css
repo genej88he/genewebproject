@@ -1,0 +1,54 @@
+/* Notepage.css */
+
+.notepage-container {
+    padding: 40px;
+    background-color: #fffbe6; /* Warm cream background 🎨 */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .notepage-container h1 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #5d4037; /* Deep brown for a soft look ☕ */
+    margin-top: 20px;
+    width: 100%;
+    max-width: 800px;
+  }
+  
+  .notepage-textarea {
+    width: 100%;
+    max-width: 800px;
+    height: 600px;
+    margin-top: 20px;
+    padding: 10px 15px;
+    font-size: 18px;
+    line-height: 31px; /* This must match the line spacing below 📐 */
+    border: none;
+    outline: none;
+    resize: none;
+    color: #3e2723;
+    
+    /* Creating the lines using a background gradient ✍️ */
+    background-attachment: local;
+    background-image: linear-gradient(transparent 30px, #d1c4e9 30px, #d1c4e9 31px);
+    background-size: 100% 31px;
+    background-color: transparent;
+  }
+  
+  /* Style for the back button 🔙 */
+  .back-btn {
+    align-self: flex-start;
+    padding: 8px 16px;
+    background-color: #5d4037;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  
+  .back-btn:hover {
+    opacity: 0.8;
+  }

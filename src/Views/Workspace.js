@@ -47,6 +47,8 @@ const MangoSeed = ({ seed, onDragEnd, onDblClick, onClick }) => {
   );
 };
 
+let clickTimer = null;
+
 const Workspace = ({seeds, setSeeds}) => {
   // State to hold our collection of seeds
 
@@ -58,6 +60,15 @@ const Workspace = ({seeds, setSeeds}) => {
   const [editingId, setEditingId] = useState(null);
   const [currentContent, setCurrentContent] = useState("");
   const [selectedType, setSelectedType] = useState('doc');
+
+  const getPath = (type, id) => {
+    const pathMap = {
+      'notebook': `/note/${id}`,
+      'doc': `/doc/${id}`,
+      //'whiteboard': `/whiteboard/${id}` // Added 3rd option
+    };
+    return pathMap[type] || `/doc/${id}`;
+  };
 
   const openAddModal = () => {
     setEditingId(null);
@@ -74,7 +85,7 @@ const Workspace = ({seeds, setSeeds}) => {
       setCurrentInput(selectedSeed.text);
       setIsModalOpen(true);
       setCurrentContent(selectedSeed.content || "");
-      setSelectedType(selectedType || "doc");
+      setSelectedType(selectedSeed.type || "doc");
     }   
   };
 
@@ -94,8 +105,7 @@ const Workspace = ({seeds, setSeeds}) => {
       };
       setSeeds([...seeds, newSeed]);
       setIsModalOpen(false);
-      const targetPath = selectedType === 'notebook' ? `/notebook/${newId}` : `/doc/${newId}`
-      navigate(targetPath);
+      navigate(getPath(selectedType, newId));
     }
   };
 
@@ -106,6 +116,23 @@ const Workspace = ({seeds, setSeeds}) => {
       setIsModalOpen(false);
     }
   }
+
+  const handleSingleClick = (id) => {
+    if (clickTimer) clearTimeout(clickTimer);
+
+    clickTimer = setTimeout(() => {
+      openRenameModal(id);
+      clickTimer = null;
+    }, 250); // Wait 250ms for a potential second click
+  };
+
+  const handleDoubleClick = (seed) => {
+    if (clickTimer) {
+      clearTimeout(clickTimer);
+      clickTimer = null;
+    }
+    navigate(getPath(seed.type, seed.id));
+  };
 
   // Function to create a new seed
   // const addFile = () => {
@@ -154,17 +181,15 @@ const Workspace = ({seeds, setSeeds}) => {
             <MangoSeed 
             key={seed.id} 
             seed={seed} 
-            onClick={() => openRenameModal(seed.id)}
+            onClick={() => handleSingleClick(seed.id)}
+            onDblClick={() => handleDoubleClick(seed)}
             onDragEnd={(e) => {
               const updated = seeds.map(s => 
                 s.id === seed.id ? { ...s, x: e.target.x(), y: e.target.y() } : s
               );
               setSeeds(updated);
             }} 
-            onDblClick = {() =>  {
-              const path = seed.type === 'notebook' ? `/notebook/${seed.id}` : `/note/${seed.id}`;
-              navigate(path)
-            }}
+            
           />
           ))}
         </Layer>
