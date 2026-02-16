@@ -37,13 +37,13 @@ const Header = () => {
       <nav className="header-center">
         <a href="#features" className="nav-link">Features</a>
         <a href="#benefits" className="nav-link">Benefits</a>
-        <a href="#pricing" className="nav-link">Pricing</a>
+        <a href="/pricing" className="nav-link">Pricing</a>
         <a href="#blog" className="nav-link">Blog</a>
         <a href="#contact" className="nav-link">Contact Us</a>
       </nav>
 
       <div className="header-right">
-        <Link to="/workspace" className="btn-black">
+        <Link to="/pricing" className="btn-black">
           Try Mango Seed free
         </Link>
       </div>
