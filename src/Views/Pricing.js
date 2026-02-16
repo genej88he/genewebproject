@@ -27,33 +27,35 @@ const Pricing = () => {
   ];
 
   return (
-    <div className="pricing-container">
-        <Header/>
-      <header className="pricing-header">
-        <h1>Choose your plan</h1>
-        <p>Start nurturing your thoughts today.</p>
-      </header>
+    <div className="pricing-wholepage">
+      <div className="pricing-container">
+          <Header/>
+        <header className="pricing-header">
+          <h1>Choose your plan</h1>
+          <p>Start nurturing your thoughts today.</p>
+        </header>
 
-      <div className="pricing-grid">
-        {plans.map((plan, index) => (
-          <div key={index} className={`pricing-card ${plan.isFeatured ? 'featured' : ''}`}>
-            {plan.isFeatured && <span className="badge">Most Popular</span>}
-            <h2>{plan.name}</h2>
-            <div className="price">{plan.price}<span>/year</span></div>
-            <p className="description">{plan.description}</p>
-            <ul className="features">
-              {plan.features.map((feature, i) => (
-                <li key={i}>✓ {feature}</li>
-              ))}
-            </ul>
-            <button 
-              className="plan-button" 
-              onClick={() => navigate('/workspace')}
-            >
-              {plan.buttonText}
-            </button>
-          </div>
-        ))}
+        <div className="pricing-grid">
+          {plans.map((plan, index) => (
+            <div key={index} className={`pricing-card ${plan.isFeatured ? 'featured' : ''}`}>
+              {plan.isFeatured && <span className="badge">Most Popular</span>}
+              <h2>{plan.name}</h2>
+              <div className="price">{plan.price}<span>/year</span></div>
+              <p className="description">{plan.description}</p>
+              <ul className="features">
+                {plan.features.map((feature, i) => (
+                  <li key={i}>✓ {feature}</li>
+                ))}
+              </ul>
+              <button 
+                className="plan-button" 
+                onClick={() => navigate('/download')}
+              >
+                {plan.buttonText}
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

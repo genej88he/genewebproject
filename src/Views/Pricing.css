@@ -1,14 +1,18 @@
+.pricing-wholepage {
+  background: linear-gradient(135deg, #fff5e6 0%, #ffe4cc 100%);
+}
 .pricing-container {
     padding: 60px 20px;
     max-width: 1000px;
     margin: 0 auto;
-    font-family: 'Inter', sans-serif;
     text-align: center;
   }
   
   .pricing-header h1 {
     font-size: 2.5rem;
     margin-bottom: 10px;
+    padding: 100px 60px 0px 60px;  /* Changed: Added more top padding (120px instead of 80px) */
+    font-family: 'Inter', sans-serif;
   }
   
   .pricing-grid {
@@ -20,8 +24,8 @@
   }
   
   .pricing-card {
-    background: white;
     border: 1px solid #e0e0e0;
+    background: #f9f4f4;
     border-radius: 16px;
     padding: 40px;
     width: 300px;

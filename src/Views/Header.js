@@ -43,7 +43,7 @@ const Header = () => {
       </nav>
 
       <div className="header-right">
-        <Link to="/pricing" className="btn-black">
+        <Link to="/download" className="btn-black">
           Try Mango Seed free
         </Link>
       </div>
