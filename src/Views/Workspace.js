@@ -17,6 +17,7 @@ const Workspace = ({seeds, setSeeds}) => {
   const [selectedType, setSelectedType] = useState('doc');
   const [openFolderId, setOpenFolderId] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showFileTree, setShowFileTree] = useState(false);
 
   const getPath = (type, id) => {
     const pathMap = {
@@ -73,6 +74,7 @@ const Workspace = ({seeds, setSeeds}) => {
       const updated = seeds.filter(s => s.id !== editingId);
       setSeeds(updated);
       setIsModalOpen(false);
+      setEditingId(null); // ADD THIS - clear editing state
     }
   };
 
@@ -107,6 +109,23 @@ const Workspace = ({seeds, setSeeds}) => {
     }
   };
 
+  // Get folder structure
+  const getFolderStructure = () => {
+    const rootItems = seeds.filter(s => !s.folderId);
+    return rootItems;
+  };
+
+  const getItemsInFolder = (folderId) => {
+    return seeds.filter(s => s.folderId === folderId);
+  };
+
+  // Handle right-click on tree item
+  const handleTreeItemRightClick = (e, seedId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openRenameModal(seedId);
+  };
+
   const currentItems = seeds.filter(s => s.folderId === openFolderId);
   const currentFolder = openFolderId ? seeds.find(s => s.id === openFolderId) : null;
 
@@ -133,6 +152,74 @@ const Workspace = ({seeds, setSeeds}) => {
               + Add File
             </button>
           </div>
+        </div>
+
+                {/* File Tree Dropdown */}
+        <div className="file-tree-section">
+          <button 
+            className="tree-toggle-btn"
+            onClick={() => setShowFileTree(!showFileTree)}
+          >
+            {showFileTree ? '▼' : '▶'} All Files ({seeds.length})
+          </button>
+
+          {showFileTree && (
+            <div className="file-tree">
+              {getFolderStructure().length === 0 ? (
+                <div className="tree-empty">No files yet</div>
+              ) : (
+                getFolderStructure()
+                  .sort((a, b) => {
+                    // Folders first, then by creation date
+                    if (a.type === 'folder' && b.type !== 'folder') return -1;
+                    if (a.type !== 'folder' && b.type === 'folder') return 1;
+                    return (b.createdAt || 0) - (a.createdAt || 0);
+                  })
+                  .map((item) => (
+                    <div key={item.id} className="tree-section">
+                      {/* Root level item */}
+                      <div 
+                        className={`tree-item ${item.type === 'folder' ? 'folder' : 'file'}`}
+                        onClick={() => handleDoubleClick(item)}
+                        onContextMenu={(e) => handleTreeItemRightClick(e, item.id)}
+                      >
+                        <span className="tree-icon">
+                          {item.type === 'folder' ? '📁' : 
+                          item.type === 'notebook' ? '📓' : '📄'}
+                        </span>
+                        <span className="tree-name">{item.text}</span>
+                        {item.type === 'folder' && (
+                          <span className="tree-count">
+                            ({getItemsInFolder(item.id).length})
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Items inside folder */}
+                      {item.type === 'folder' && getItemsInFolder(item.id).length > 0 && (
+                        <div className="tree-children">
+                          {getItemsInFolder(item.id)
+                            .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+                            .map((child) => (
+                              <div
+                                key={child.id}
+                                className="tree-item child"
+                                onClick={() => handleDoubleClick(child)}
+                                onContextMenu={(e) => handleTreeItemRightClick(e, child.id)}
+                              >
+                                <span className="tree-icon">
+                                  {child.type === 'notebook' ? '📓' : '📄'}
+                                </span>
+                                <span className="tree-name">{child.text}</span>
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  ))
+              )}
+            </div>
+          )}
         </div>
 
         <div className="canvas-wrapper">

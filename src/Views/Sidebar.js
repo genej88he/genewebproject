@@ -2,16 +2,17 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Sidebar.css';
 import orangeSidebar from '../assets/images/orangesidebar.png';
+import mangoSeed from '../assets/images/mangoseed.png';
 
 const Sidebar = ({isCollapsed, setIsCollapsed}) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const menuItems = [
-    { id: 'workspace', icon: '📁', label: 'Workspace', path: '/workspace' },
-    { id: 'test-gen', icon: '🧠', label: 'Test Generator', path: '/test-generator' },
-    { id: 'stats', icon: '📊', label: 'Study Stats', path: '/stats', disabled: true },
-    { id: 'settings', icon: '⚙️', label: 'Settings', path: '/settings', disabled: true },
+    { id: 'workspace', label: 'Workspace', path: '/workspace' },
+    { id: 'test-gen', label: 'Test Generator', path: '/test-generator' },
+    { id: 'stats', label: 'Study Stats', path: '/stats', disabled: true },
+    { id: 'settings', label: 'Settings', path: '/settings', disabled: true },
   ];
 
   return (
@@ -30,7 +31,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
                 <h3 className="app-name">Mango Seed</h3>
             </>
             )}
-            {isCollapsed && <div className="app-logo">🥭</div>}
+            {isCollapsed && <img src={mangoSeed} alt="logo" className="sidebar-logo" />}
         </div>
         
       </div>

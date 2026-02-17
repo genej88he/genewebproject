@@ -7,14 +7,16 @@ import Notepage from './Views/Notepage';
 import Textdoc from './Views/Textdoc';
 import Pricing from './Views/Pricing';
 import Download from './Views/Download';
+import TestGenerator from './Views/TestGenerator';
 
 
 function App() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+
   const [seeds, setSeeds] = useState(() => {
     const savedSeeds = localStorage.getItem('mango-seeds');
-    return savedSeeds ? JSON.parse(savedSeeds) : [
-      { id: '1', x: 200, y: 200, text: 'Lecture Notes', content: '' }
-    ];
+    return savedSeeds ? JSON.parse(savedSeeds) : [];
   });
 
   // 2. Automatically save to LocalStorage whenever 'seeds' changes
@@ -43,10 +45,10 @@ function App() {
 
           {isElectron && (
             <>
-              <Route path="/" element={<Workspace seeds={seeds} setSeeds={setSeeds} />} />
+              <Route path="/" element={<Workspace seeds={seeds} setSeeds={setSeeds} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>} />
               <Route 
                 path="/workspace" 
-                element={<Workspace seeds={seeds} setSeeds={setSeeds} />} 
+                element={<Workspace seeds={seeds} setSeeds={setSeeds} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>} 
               />
               <Route 
                 path="/note/:seedId" 
@@ -55,6 +57,10 @@ function App() {
               <Route
                 path="/doc/:seedId"
                 element={<Textdoc seeds={seeds} setSeeds={setSeeds} />}
+              />
+              <Route 
+                path="/test-generator" 
+                element={<TestGenerator isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} seeds={seeds} />} 
               />
             </>
           )}
