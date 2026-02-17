@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './Workspace.css';
+import Sidebar from './Sidebar.js'
 
 import docImg from '../assets/images/orangedoc.png';
 import folderImg from '../assets/images/mangofile.png'
@@ -15,6 +16,7 @@ const Workspace = ({seeds, setSeeds}) => {
   const [currentContent, setCurrentContent] = useState("");
   const [selectedType, setSelectedType] = useState('doc');
   const [openFolderId, setOpenFolderId] = useState(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const getPath = (type, id) => {
     const pathMap = {
@@ -109,109 +111,112 @@ const Workspace = ({seeds, setSeeds}) => {
   const currentFolder = openFolderId ? seeds.find(s => s.id === openFolderId) : null;
 
   return (
-    <div className="workspace-container">
-      <div className="workspace-controls">
-        <div className="breadcrumb">
-          {openFolderId && (
-            <button onClick={handleBackToRoot} className="back-btn">
-              ← Back
+    <>
+      <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
+      <div className="workspace-container" style={{ marginLeft: isCollapsed ? '70px' : '240px' }}>
+        <div className="workspace-controls">
+          <div className="breadcrumb">
+            {openFolderId && (
+              <button onClick={handleBackToRoot} className="back-btn">
+                ← Back
+              </button>
+            )}
+            <h2 className="welcome-text">
+              {openFolderId ? currentFolder?.text : 'Welcome to your Mango Seed Workspace'}
+            </h2>
+          </div>
+          <div className="action-buttons">
+            <button className="add-seed-btn" onClick={() => openAddModal('folder')}>
+              + New Folder
             </button>
-          )}
-          <h2 className="welcome-text">
-            {openFolderId ? currentFolder?.text : 'Welcome to your Mango Seed Workspace'}
-          </h2>
+            <button className="add-seed-btn" onClick={() => openAddModal('doc')}>
+              + Add File
+            </button>
+          </div>
         </div>
-        <div className="action-buttons">
-          <button className="add-seed-btn" onClick={() => openAddModal('folder')}>
-            + New Folder
-          </button>
-          <button className="add-seed-btn" onClick={() => openAddModal('doc')}>
-            + Add File
-          </button>
-        </div>
-      </div>
 
-      <div className="canvas-wrapper">
-        <div className="file-grid">
-          {currentItems
-            .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))
-            .map((seed) => (
-              <div
-                key={seed.id}
-                className="file-item"
-                draggable={seed.type !== 'folder'}
-                onDragStart={(e) => handleDragStart(e, seed.id)}
-                onDragOver={seed.type === 'folder' ? handleDragOver : undefined}
-                onDrop={seed.type === 'folder' ? (e) => handleDropOnFolder(e, seed.id) : undefined}
-                onClick={() => handleDoubleClick(seed)}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  openRenameModal(seed.id);
-                }}
-              >
-                <div className="file-icon-wrapper">
-                  {seed.type === 'folder' ? (
-                    <img src={folderImg} alt="folder" className="folder-icon" />
-                  ) : (
-                    <img src={docImg} alt="file" className="file-icon-img" />
+        <div className="canvas-wrapper">
+          <div className="file-grid">
+            {currentItems
+              .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))
+              .map((seed) => (
+                <div
+                  key={seed.id}
+                  className="file-item"
+                  draggable={seed.type !== 'folder'}
+                  onDragStart={(e) => handleDragStart(e, seed.id)}
+                  onDragOver={seed.type === 'folder' ? handleDragOver : undefined}
+                  onDrop={seed.type === 'folder' ? (e) => handleDropOnFolder(e, seed.id) : undefined}
+                  onClick={() => handleDoubleClick(seed)}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    openRenameModal(seed.id);
+                  }}
+                >
+                  <div className="file-icon-wrapper">
+                    {seed.type === 'folder' ? (
+                      <img src={folderImg} alt="folder" className="folder-icon" />
+                    ) : (
+                      <img src={docImg} alt="file" className="file-icon-img" />
+                    )}
+                  </div>
+                  <div className="file-name">{seed.text}</div>
+                </div>
+              ))}
+          </div>
+        </div>
+
+        {isModalOpen && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>{editingId ? "Rename Seed" : `New ${selectedType === 'folder' ? 'Folder' : 'File'}`}</h3>
+              
+              {!editingId && selectedType !== 'folder' && (
+                <div className="type-selector">
+                  <button 
+                    className={`type-btn ${selectedType === 'doc' ? 'active' : ''}`}
+                    onClick={() => setSelectedType('doc')}
+                  >
+                    Text Doc
+                  </button>
+                  <button 
+                    className={`type-btn ${selectedType === 'notebook' ? 'active' : ''}`}
+                    onClick={() => setSelectedType('notebook')}
+                  >
+                    Notebook
+                  </button>
+                </div>
+              )}
+
+              <input 
+                type="text" 
+                value={currentInput} 
+                onChange={(e) => setCurrentInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
+                placeholder={selectedType === 'folder' ? "Folder name" : "File name"}
+                autoFocus
+              />
+
+              <div className="modal-actions">
+                <div className="left-actions">
+                  {editingId && (
+                    <button className="delete-btn" onClick={handleDelete}>
+                      Delete
+                    </button>
                   )}
                 </div>
-                <div className="file-name">{seed.text}</div>
-              </div>
-            ))}
-        </div>
-      </div>
-
-      {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>{editingId ? "Rename Seed" : `New ${selectedType === 'folder' ? 'Folder' : 'File'}`}</h3>
-            
-            {!editingId && selectedType !== 'folder' && (
-              <div className="type-selector">
-                <button 
-                  className={`type-btn ${selectedType === 'doc' ? 'active' : ''}`}
-                  onClick={() => setSelectedType('doc')}
-                >
-                  Text Doc
-                </button>
-                <button 
-                  className={`type-btn ${selectedType === 'notebook' ? 'active' : ''}`}
-                  onClick={() => setSelectedType('notebook')}
-                >
-                  Notebook
-                </button>
-              </div>
-            )}
-
-            <input 
-              type="text" 
-              value={currentInput} 
-              onChange={(e) => setCurrentInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
-              placeholder={selectedType === 'folder' ? "Folder name" : "File name"}
-              autoFocus
-            />
-
-            <div className="modal-actions">
-              <div className="left-actions">
-                {editingId && (
-                  <button className="delete-btn" onClick={handleDelete}>
-                    Delete
+                <div className="right-actions">
+                  <button className="cancel-btn" onClick={() => setIsModalOpen(false)}>Cancel</button>
+                  <button className="confirm-btn" onClick={handleConfirm}>
+                    {editingId ? "Save Changes" : "Create & Open"}
                   </button>
-                )}
-              </div>
-              <div className="right-actions">
-                <button className="cancel-btn" onClick={() => setIsModalOpen(false)}>Cancel</button>
-                <button className="confirm-btn" onClick={handleConfirm}>
-                  {editingId ? "Save Changes" : "Create & Open"}
-                </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };
 

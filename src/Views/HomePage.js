@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './HomePage.css';
 import Header from './Header.js';
 import Hero from './Hero.js';
 import Features from './Features.js'
 
-import mangoCup from '../assets/images/mangoseed.png';
-import mangoLogo from '../assets/images/mangoseed512.png';
+// import mangoCup from '../assets/images/mangoseed.png';
 
 const HomePage = () => {
     return (
