@@ -46,11 +46,20 @@ const Workspace = ({seeds, setSeeds}) => {
     }   
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {  // ADD async
     if (editingId) {
-      setSeeds(seeds.map(s => s.id === editingId ? { ...s, text: currentInput, content: currentContent, type: selectedType} : s));
+      // UPDATE existing note
+      await window.electronAPI.updateNote(editingId, {
+        text: currentInput,
+        content: currentContent
+      });
+      
+      // Reload from database
+      const notes = await window.electronAPI.getAllNotes();
+      setSeeds(notes);
       setIsModalOpen(false);
     } else {
+      // CREATE new note
       const newId = uuidv4();
       const newSeed = {
         id: newId,
@@ -60,7 +69,12 @@ const Workspace = ({seeds, setSeeds}) => {
         folderId: openFolderId,
         createdAt: Date.now()
       };
-      setSeeds([...seeds, newSeed]);
+      
+      await window.electronAPI.createNote(newSeed);
+      
+      // Reload from database
+      const notes = await window.electronAPI.getAllNotes();
+      setSeeds(notes);
       setIsModalOpen(false);
       
       if (selectedType !== 'folder') {
@@ -69,12 +83,15 @@ const Workspace = ({seeds, setSeeds}) => {
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {  // ADD async
     if (editingId) {
-      const updated = seeds.filter(s => s.id !== editingId);
-      setSeeds(updated);
+      await window.electronAPI.deleteNote(editingId);
+      
+      // Reload from database
+      const notes = await window.electronAPI.getAllNotes();
+      setSeeds(notes);
       setIsModalOpen(false);
-      setEditingId(null); // ADD THIS - clear editing state
+      setEditingId(null);
     }
   };
 

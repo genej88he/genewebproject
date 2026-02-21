@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar.js'
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import './TestGenerator.css';
 
 const TestGenerator = ({ isCollapsed, setIsCollapsed, seeds }) => {
@@ -32,17 +31,15 @@ const TestGenerator = ({ isCollapsed, setIsCollapsed, seeds }) => {
             return;
         }
 
+        console.log('API Key exists:', !!process.env.REACT_APP_GEMINI_API_KEY);
+        console.log('API Key first 10 chars:', process.env.REACT_APP_GEMINI_API_KEY?.substring(0, 10));
+
         setIsGenerating(true);
         setError(null);
         setGeneratedTest(null);
 
         try {
         // Initialize Gemini
-            const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
-            const model = genAI.getGenerativeModel({ 
-                model: "gemini-1.5-flash",
-                apiVersion: "v1"  // Force v1 instead of v1beta
-            });
 
             // Create the prompt based on question type
             let prompt = `You are an expert educator creating high-level thinking questions that test deep understanding, not just memorization.
@@ -81,9 +78,25 @@ const TestGenerator = ({ isCollapsed, setIsCollapsed, seeds }) => {
             }
 
         // Generate content
-            const result = await model.generateContent(prompt);
-            const response = await result.response;
-            const text = response.text();
+            // NEW (REST API - should work)
+            const response = await fetch(
+                `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${process.env.REACT_APP_GEMINI_API_KEY}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error?.message || 'API request failed');
+            }
+
+            const data = await response.json();
+            const text = data.candidates[0].content.parts[0].text;
 
         // Parse the response
             setGeneratedTest({

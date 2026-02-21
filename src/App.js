@@ -14,15 +14,19 @@ function App() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
 
-  const [seeds, setSeeds] = useState(() => {
-    const savedSeeds = localStorage.getItem('mango-seeds');
-    return savedSeeds ? JSON.parse(savedSeeds) : [];
-  });
+  const [seeds, setSeeds] = useState([]);
 
-  // 2. Automatically save to LocalStorage whenever 'seeds' changes
+  // Load notes from database when app starts
   useEffect(() => {
-    localStorage.setItem('mango-seeds', JSON.stringify(seeds));
-  }, [seeds]);
+  async function loadNotes() {
+    if (window.electronAPI) {
+      const notes = await window.electronAPI.getAllNotes();
+      console.log('Loaded notes:', notes);  // ADD THIS LINE
+      setSeeds(notes);
+    }
+  }
+  loadNotes();
+}, []);
 
   const isElectron = window.navigator.userAgent.includes('Electron');
 

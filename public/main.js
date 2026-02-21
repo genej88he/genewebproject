@@ -1,6 +1,7 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const isDev = require('electron-is-dev');
+const db = require('./database');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -9,6 +10,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
     },
   });
 
@@ -24,6 +26,25 @@ function createWindow() {
 //     win.webContents.openDevTools();
 //   }
 }
+
+ipcMain.handle('get-all-notes', async () => {
+  return db.getAllNotes();
+});
+
+ipcMain.handle('create-note', async (event, note) => {
+  db.createNote(note);
+  return { success: true };
+});
+
+ipcMain.handle('update-note', async (event, id, updates) => {
+  db.updateNote(id, updates);
+  return { success: true };
+});
+
+ipcMain.handle('delete-note', async (event, id) => {
+  db.deleteNote(id);
+  return { success: true };
+});
 
 app.whenReady().then(createWindow);
 
