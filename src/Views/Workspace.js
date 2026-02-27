@@ -6,6 +6,7 @@ import Sidebar from './Sidebar.js'
 
 import docImg from '../assets/images/orangedoc.png';
 import folderImg from '../assets/images/mangofile.png'
+// import notebookImg from '../assets/images/orangenotebook.png'
 
 const Workspace = ({seeds, setSeeds}) => {
   const navigate = useNavigate();
@@ -201,8 +202,8 @@ const Workspace = ({seeds, setSeeds}) => {
                         onContextMenu={(e) => handleTreeItemRightClick(e, item.id)}
                       >
                         <span className="tree-icon">
-                          {item.type === 'folder' ? '📁' : 
-                          item.type === 'notebook' ? '📓' : '📄'}
+                          {item.type === 'folder' ? <img src={folderImg} alt="folder" className="dropdown-icons" /> : 
+                          item.type === 'notebook' ? '📓' : <img src={docImg} alt="file" className="dropdown-icons"/>}
                         </span>
                         <span className="tree-name">{item.text}</span>
                         {item.type === 'folder' && (
@@ -225,7 +226,7 @@ const Workspace = ({seeds, setSeeds}) => {
                                 onContextMenu={(e) => handleTreeItemRightClick(e, child.id)}
                               >
                                 <span className="tree-icon">
-                                  {child.type === 'notebook' ? '📓' : '📄'}
+                                  {child.type === 'notebook' ? '📓' :<img src={docImg} alt="file" className="dropdown-icons"/>}
                                 </span>
                                 <span className="tree-name">{child.text}</span>
                               </div>
@@ -264,7 +265,7 @@ const Workspace = ({seeds, setSeeds}) => {
                       <img src={docImg} alt="file" className="file-icon-img" />
                     )}
                   </div>
-                  <div className="file-name">{seed.text}</div>
+                  <div className="file-name">{seed.text || 'Untitled'}</div>
                 </div>
               ))}
           </div>

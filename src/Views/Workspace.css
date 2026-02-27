@@ -149,6 +149,11 @@
   flex-shrink: 0;
 }
 
+.dropdown-icons {
+  width: 35px;
+  height: 35px;
+}
+
 .tree-name {
   flex: 1;
   overflow: hidden;
