@@ -4,6 +4,8 @@ const isDev = require('electron-is-dev');
 const db = require('./database');
 
 function createWindow() {
+  db.startSession();
+
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -12,6 +14,10 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     },
+  });
+
+  win.on('close', () => {
+    db.endSession(); // end session when app closes
   });
 
   // Load from localhost in development, build folder in production
@@ -45,6 +51,11 @@ ipcMain.handle('delete-note', async (event, id) => {
   db.deleteNote(id);
   return { success: true };
 });
+
+ipcMain.handle('get-stats', async() => {
+  return db.getStats();
+})
+
 
 app.whenReady().then(createWindow);
 

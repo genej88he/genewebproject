@@ -8,7 +8,7 @@ import Textdoc from './Views/Textdoc';
 import Pricing from './Views/Pricing';
 import Download from './Views/Download';
 import TestGenerator from './Views/TestGenerator';
-
+import StudyStats from './Views/StudyStats';
 
 function App() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -65,6 +65,11 @@ function App() {
               <Route 
                 path="/test-generator" 
                 element={<TestGenerator isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} seeds={seeds} />} 
+              />
+              <Route
+                path="/stats"
+                element={<StudyStats isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />}
+
               />
             </>
           )}

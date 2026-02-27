@@ -18,7 +18,7 @@
   }
   
   .sidebar-header {
-    padding: 24px 20px;
+    padding: 24px 10px;
     background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
     display: flex;
     flex-direction: column; /* Stack vertically */
@@ -26,7 +26,7 @@
   }
   
   .sidebar.collapsed .sidebar-header {
-    padding: 24px 10px;
+    padding: 24px 20px;
   }
   
   .app-name {
@@ -131,6 +131,49 @@
     flex: 1;
   }
   
+  /* STREAK TIMER */
+  .streak-timer {
+    padding: 12px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .streak-countdown,
+  .streak-secured {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    min-height: 40px;  /* keeps height consistent */
+  }
+
+  .streak-countdown {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .streak-secured {
+    background: rgba(255, 159, 67, 0.2);
+    color: #ff9f43;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .streak-fire {
+    font-size: 18px;
+  }
+
+  .streak-text {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .mango-fire-icon {
+    width: 45px;
+    height: auto;
+  }
+
   .sidebar-footer {
     padding: 16px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);

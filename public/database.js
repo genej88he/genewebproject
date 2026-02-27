@@ -16,6 +16,16 @@ db.exec(`
     );
   `);
 
+  db.exec(`
+      CREATE TABLE IF NOT EXISTS stats (
+      id TEXT PRIMARY KEY,
+      last_opened INTEGER,
+      session_start INTEGER,
+      streak INTEGER DEFAULT 0,
+      total_days INTEGER DEFAULT 0
+    );
+  `)
+
   function getAllNotes() {
     const stmt = db.prepare('SELECT * FROM notes ORDER BY `created_at` DESC');
     const rows = stmt.all();
@@ -62,9 +72,59 @@ function deleteNote(id) {
     return stmt.run(id);
 }
 
+function getStats() {
+  const row = db.prepare('SELECT * FROM stats WHERE id = 1').get();
+  const noteCount = db.prepare("SELECT COUNT(*) as count FROM notes WHERE type != 'folder'").get();
+  return {
+      streak: row?.streak || 0,
+      totalDays: row?.total_days || 0,
+      noteCount: noteCount.count,
+      sessionStart: row?.session_start || null
+  };
+}
+
+function startSession() {
+  const now = Date.now();
+  const row = db.prepare('SELECT * FROM stats WHERE id = 1').get();
+  if (!row) {
+      db.prepare('INSERT INTO stats (id, last_opened, session_start, streak, total_days) VALUES (1, ?, ?, 0, 0)').run(now, now);
+  } else {
+      db.prepare('UPDATE stats SET session_start = ? WHERE id = 1').run(now);
+  }
+}
+
+function endSession() {
+  const now = Date.now();
+  const today = new Date().setHours(0, 0, 0, 0);
+  const yesterday = today - 86400000;
+
+  const row = db.prepare('SELECT * FROM stats WHERE id = 1').get();
+  if (!row) return;
+
+  const sessionDuration = now - row.session_start;
+  const thirtyMinutes = 30 * 60 * 1000;
+
+  if (sessionDuration < thirtyMinutes) return;
+
+  const lastOpened = new Date(row.last_opened).setHours(0, 0, 0, 0);
+
+  if (lastOpened === today) {
+      return;
+  } else if (lastOpened === yesterday) {
+      db.prepare('UPDATE stats SET last_opened = ?, streak = ?, total_days = ? WHERE id = 1')
+          .run(now, row.streak + 1, row.total_days + 1);
+  } else {
+      db.prepare('UPDATE stats SET last_opened = ?, streak = 1, total_days = ? WHERE id = 1')
+          .run(now, row.total_days + 1);
+  }
+}
+
 module.exports = {
     getAllNotes,
     createNote,
     updateNote,
-    deleteNote
+    deleteNote,
+    getStats,
+    startSession,
+    endSession
 };
