@@ -23,13 +23,16 @@ const StudyStats = ({ isCollapsed, setIsCollapsed}) => {
   // Countdown timer
   useEffect(() => {
     if (!stats.sessionStart) return;
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       const elapsed = Date.now() - stats.sessionStart;
       const remaining = THIRTY_MINUTES - elapsed;
       if (remaining <= 0) {
         setStreakSecured(true);
         setTimeLeft(null);
         clearInterval(interval);
+        await window.electronAPI.secureStreak();
+        const updatedStats = await window.electronAPI.getStats();
+        setStats(updatedStats);
       } else {
         const mins = Math.floor(remaining / 60000);
         const secs = Math.floor((remaining % 60000) / 1000);

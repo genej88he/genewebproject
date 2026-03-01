@@ -5,5 +5,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     createNote: (note) => ipcRenderer.invoke('create-note', note),
     updateNote: (id, updates) => ipcRenderer.invoke('update-note', id, updates),
     deleteNote: (id) => ipcRenderer.invoke('delete-note', id),
-    getStats: () => ipcRenderer.invoke('get-stats')
+    getStats: () => ipcRenderer.invoke('get-stats'),
+    secureStreak: () => ipcRenderer.invoke('secure-streak')
   });

@@ -56,6 +56,10 @@ ipcMain.handle('get-stats', async() => {
   return db.getStats();
 })
 
+ipcMain.handle('secure-streak', async () => {
+  return db.secureStreak();
+});
+
 
 app.whenReady().then(createWindow);
 

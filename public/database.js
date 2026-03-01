@@ -128,6 +128,27 @@ function endSession() {
   }
 }
 
+function secureStreak() {
+  const now = Date.now();
+  const today = new Date().setHours(0, 0, 0, 0);
+  const yesterday = today - 86400000;
+
+  const row = db.prepare('SELECT * FROM stats WHERE id = 1').get();
+  if (!row) return;
+
+  const lastOpened = new Date(row.last_opened).setHours(0, 0, 0, 0);
+
+  if (lastOpened === today) {
+      return; // already counted today
+  } else if (lastOpened === yesterday) {
+      db.prepare('UPDATE stats SET last_opened = ?, streak = ?, total_days = ? WHERE id = 1')
+          .run(now, row.streak + 1, row.total_days + 1);
+  } else {
+      db.prepare('UPDATE stats SET last_opened = ?, streak = 1, total_days = ? WHERE id = 1')
+          .run(now, row.total_days + 1);
+  }
+}
+
 module.exports = {
     getAllNotes,
     createNote,
@@ -135,5 +156,6 @@ module.exports = {
     deleteNote,
     getStats,
     startSession,
-    endSession
+    endSession,
+    secureStreak
 };

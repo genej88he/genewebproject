@@ -39,7 +39,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
   useEffect(() => {
     if (!sessionStart) return;
 
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       const elapsed = Date.now() - sessionStart;
       const remaining = THIRTY_MINUTES - elapsed;
 
@@ -47,6 +47,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
         setStreakSecured(true);
         setTimeLeft(null);
         clearInterval(interval);
+        await window.electronAPI.secureStreak();
       } else {
         setStreakSecured(false);
         const mins = Math.floor(remaining / 60000);
