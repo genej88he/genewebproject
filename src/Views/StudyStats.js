@@ -99,7 +99,7 @@ const StudyStats = ({ isCollapsed, setIsCollapsed}) => {
     <>
         <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
         <div className="stats-container" style={{ marginLeft: isCollapsed ? '70px' : '240px' }}>
-        <h1 className="stats-title">Study Stats</h1>
+        <h1 className="stats-title">Study Statistics</h1>
 
         {/* STAT CARDS */}
         <div className="stats-cards">

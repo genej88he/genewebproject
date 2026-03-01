@@ -85,11 +85,20 @@ function getStats() {
 
 function startSession() {
   const now = Date.now();
+  const today = new Date().setHours(0, 0, 0, 0);   
   const row = db.prepare('SELECT * FROM stats WHERE id = 1').get();
   if (!row) {
       db.prepare('INSERT INTO stats (id, last_opened, session_start, streak, total_days) VALUES (1, ?, ?, 0, 0)').run(now, now);
   } else {
-      db.prepare('UPDATE stats SET session_start = ? WHERE id = 1').run(now);
+    const lastSessionDate = row.session_start ? new Date(row.session_start).setHours(0, 0, 0, 0) : null;
+        
+    if (lastSessionDate === today) {
+        // Same day — don't reset, keep existing session_start so timer resumes
+        return;
+    } else {
+        // New day — start fresh session
+        db.prepare('UPDATE stats SET session_start = ? WHERE id = 1').run(now);
+    }
   }
 }
 

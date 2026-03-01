@@ -158,7 +158,7 @@ const Workspace = ({seeds, setSeeds}) => {
                 ← Back
               </button>
             )}
-            <h2 className="welcome-text">
+            <h2 className="welcome-text" style={{paddingLeft: isCollapsed? '10px': '0px'}}>
               {openFolderId ? currentFolder?.text : 'Welcome to your Mango Seed Workspace'}
             </h2>
           </div>

@@ -9,12 +9,12 @@
     left: 0;
     top: 0;
     z-index: 1000;
-    transition: width 0.3s ease;
-    
+    transition: all 0.3s ease;
+    overflow: hidden;  /* add this - prevents anything from pushing out */ 
   }
   
   .sidebar.collapsed {
-    width: 70px;
+    width: 100px;
   }
   
   .sidebar-header {
@@ -23,18 +23,7 @@
     display: flex;
     flex-direction: column; /* Stack vertically */
     gap: 12px;
-  }
-  
-  .sidebar.collapsed .sidebar-header {
-    padding: 24px 20px;
-  }
-  
-  .app-name {
-    color: white;
-    font-size: 18px;
-    font-weight: 700;
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    transition: all 0.3s ease;
   }
   
   .collapse-btn {
@@ -48,9 +37,19 @@
     font-size: 16px;
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* Aligns the icon to the left */
+    padding-left: 20px;
+    justify-content: center; /* Aligns the icon to the left */
     transition: all 0.2s ease;
     flex-shrink: 0; /* Prevent shrinking */
+    transition: all 0.4s ease;
+    
+
+  }
+
+  .sidebar.collapsed .collapse-btn {
+    padding-left: 0px;
+    justify-content: center;  /* center when collapsed */
+    width: 100%;              /* full width so it centers properly */
   }
 
   .file-icon-img2 {
@@ -58,17 +57,37 @@
     height: auto; /* Maintain aspect ratio */
   }
 
+  .app-name {
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    transition: opacity 0.3s ease;
+    opacity: 1;
+    position: absolute;  /* so they overlap */
+  }
+  
   .logo-wrapper {
-    padding : 10px 10px 10px 10px;
+    padding: 10px;
     display: flex;
     gap: 12px;
-    width: 100%; /* Full width */
+    width: 100%;
     flex: 1;
+    position: relative;  /* needed for absolute children */
+    min-height: 30px;    /* so the wrapper doesn't collapse to 0 */
+  }
+
+  .label-hidden {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .sidebar-logo {
     width: 30px;
     height: auto;
+    transition: opacity 0.3s ease;
+    opacity: 1;
   }
   
   .sidebar-nav {
@@ -78,10 +97,7 @@
     flex-direction: column;
     gap: 8px;
     overflow-y: auto;
-  }
-  
-  .sidebar.collapsed .sidebar-nav {
-    padding: 20px 8px;
+    flex-shrink: 0;
   }
   
   .sidebar-item {
@@ -100,6 +116,10 @@
     text-align: left;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     white-space: nowrap;
+    height: 44px;        /* add this */
+    min-height: 44px;    /* add this */
+    width: 100%;         /* add this */
+    box-sizing: border-box; /* add this */
   }
   
   .sidebar.collapsed .sidebar-item {
@@ -129,6 +149,13 @@
   
   .sidebar-label {
     flex: 1;
+    transition: opacity 0.3s ease;
+    opacity: 1;
+  }
+  
+  .sidebar-label.label-hidden {
+    opacity: 0;
+    pointer-events: none;  /* so hidden labels can't be clicked */
   }
   
   /* STREAK TIMER */
@@ -179,17 +206,14 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  .sidebar.collapsed .sidebar-footer {
-    padding: 16px 8px;
-  }
-  
   .user-info {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px;
+    padding: 8px 12px;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.05);
+    min-height: 40px;
   }
   
   .sidebar.collapsed .user-info {
@@ -197,7 +221,8 @@
   }
   
   .user-avatar {
-    font-size: 24px;
+    width: 45px;
+    height: auto;
   }
   
   .user-name {

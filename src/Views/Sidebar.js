@@ -19,7 +19,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
   const menuItems = [
     { id: 'workspace', label: 'Workspace', path: '/workspace' },
     { id: 'test-gen', label: 'Test Generator', path: '/test-generator' },
-    { id: 'stats', label: 'Study Stats', path: '/stats'},
+    { id: 'stats', label: 'Study Statistics', path: '/stats'},
     { id: 'settings', label: 'Settings', path: '/settings', disabled: true },
   ];
 
@@ -68,13 +68,13 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
             >
             {<img src={orangeSidebar} alt="sidebar" className="file-icon-img2" />}
         </button>
-        <div className="logo-wrapper">
-            {!isCollapsed && (
-            <>
-                <h3 className="app-name">Mango Seed</h3>
-            </>
-            )}
-            {isCollapsed && <img src={mangoSeed} alt="logo" className="sidebar-logo" />}
+        <div className="logo-wrapper" style={{ position: 'relative' }}>
+          <h3 className={`app-name ${isCollapsed ? 'label-hidden' : ''}`}>
+            Mango Seed
+          </h3>
+          <h3 className={`app-name ${isCollapsed ? '' : 'label-hidden'}`}>
+            Mango
+          </h3>
         </div>
         
       </div>
@@ -89,34 +89,32 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
             title={isCollapsed ? item.label : ''}
           >
             <span className="sidebar-icon">{item.icon}</span>
-            {!isCollapsed && <span className="sidebar-label">{item.label}</span>}
+            <span className={`sidebar-label ${isCollapsed ? 'label-hidden' : ''}`}>
+              {item.label}
+            </span>
           </button>
         ))}
       </nav>
 
       <div className="streak-timer">
         {streakSecured ? (
-        <div className="streak-secured">
-        {!isCollapsed && (
-          <>
-            <img src={mangoFire} alt="fire" className="mango-fire-icon" />
-            <span>Streak secured!</span>
-          </>
-        )}
-      </div>
+          <div className="streak-secured">
+          <img src={mangoFire} alt="fire" className="mango-fire-icon" />
+          {!isCollapsed && <span>Streak secured!</span>}
+        </div>
         ) : (
           <div className="streak-countdown">
-          {!isCollapsed ? (
-            <>
-              <img src={mangoFire} alt="fire" className="mango-fire-icon" />
-              <span className="streak-text">
-                {timeLeft ? `${timeLeft} left` : 'Loading...'}
-              </span>
-            </>
-          ) : (
-            <img src={mangoFire} alt="fire" className="mango-fire-icon" />
-          )}
-        </div>
+            {!isCollapsed ? (
+              <>
+                <span className="streak-fire">🔥</span>
+                <span className="streak-text">
+                  {timeLeft ? `${timeLeft} left` : 'Loading...'}
+                </span>
+              </>
+            ) : (
+              <span className="streak-fire">🔥</span>
+            )}
+          </div>
         )}
       </div>
 
