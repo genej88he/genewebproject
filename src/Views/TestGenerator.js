@@ -31,9 +31,6 @@ const TestGenerator = ({ isCollapsed, setIsCollapsed, seeds }) => {
             return;
         }
 
-        console.log('API Key exists:', !!process.env.REACT_APP_GEMINI_API_KEY);
-        console.log('API Key first 10 chars:', process.env.REACT_APP_GEMINI_API_KEY?.substring(0, 10));
-
         setIsGenerating(true);
         setError(null);
         setGeneratedTest(null);
@@ -79,24 +76,13 @@ const TestGenerator = ({ isCollapsed, setIsCollapsed, seeds }) => {
 
         // Generate content
             // NEW (REST API - should work)
-            const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${process.env.REACT_APP_GEMINI_API_KEY}`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }]
-                    })
-                }
-            );
+            const result = await window.electronAPI.generateTest({ prompt });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error?.message || 'API request failed');
+            if (!result.success) {
+                throw new Error(result.error || 'API request failed');
             }
 
-            const data = await response.json();
-            const text = data.candidates[0].content.parts[0].text;
+            const text = result.data.candidates[0].content.parts[0].text;
 
         // Parse the response
             setGeneratedTest({
@@ -125,6 +111,61 @@ const TestGenerator = ({ isCollapsed, setIsCollapsed, seeds }) => {
         alert('Save as note feature coming soon!');
     };
 
+    const renderFormattedTest = (content) => {
+        return content.split('\n').map((line, index) => {
+          // Bold text **like this** → <strong>like this</strong>
+          const formattedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      
+          // Empty line → spacing
+          if (line.trim() === '' || line.trim() === '---') {
+            return <div key={index} style={{ marginBottom: '12px' }} />;
+          }
+      
+          // Q1:, Q2: etc → question header
+          if (line.trim().match(/^Q\d+:/)) {
+            return <h3 key={index} style={{
+              color: '#e67e22',
+              marginTop: '24px',
+              marginBottom: '8px',
+              fontSize: '16px'
+            }} dangerouslySetInnerHTML={{ __html: formattedLine }} />;
+          }
+      
+          // A) B) C) D) → answer options
+          if (line.trim().match(/^[A-D]\)/)) {
+            return <p key={index} style={{
+              marginLeft: '20px',
+              marginBottom: '4px',
+              color: '#2c3e50'
+            }} dangerouslySetInnerHTML={{ __html: formattedLine }} />;
+          }
+      
+          // Correct Answer: → green
+          if (line.trim().startsWith('Correct Answer:')) {
+            return <p key={index} style={{
+              color: '#27ae60',
+              fontWeight: 'bold',
+              marginTop: '8px'
+            }} dangerouslySetInnerHTML={{ __html: formattedLine }} />;
+          }
+      
+          // Explanation: / Key Points: / Guidance: → label
+          if (line.trim().match(/^(Explanation:|Key Points:|Guidance:)/)) {
+            return <p key={index} style={{
+              color: '#7f8c8d',
+              fontStyle: 'italic',
+              marginTop: '4px'
+            }} dangerouslySetInnerHTML={{ __html: formattedLine }} />;
+          }
+      
+          // Everything else → regular paragraph
+          return <p key={index} style={{
+            marginBottom: '4px',
+            lineHeight: '1.8',
+            color: '#2c3e50'
+          }} dangerouslySetInnerHTML={{ __html: formattedLine }} />;
+        });
+      };
     return (
         <>
         <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
@@ -238,7 +279,7 @@ const TestGenerator = ({ isCollapsed, setIsCollapsed, seeds }) => {
                 </div>
                 
                 <div className="test-content">
-                    <pre>{generatedTest.content}</pre>
+                    {renderFormattedTest(generatedTest.content)}
                 </div>
                 
                 <div className="timestamp">
