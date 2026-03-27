@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './StudyStats.css';
-import Sidebar from './Sidebar.js'
+import Sidebar from './Sidebar.js';
 
 const THIRTY_MINUTES = 30 * 60 * 1000;
+const CIRCUMFERENCE = 2 * Math.PI * 52; // radius 52
 
-const StudyStats = ({ isCollapsed, setIsCollapsed}) => {
+const StudyStats = ({ isCollapsed, setIsCollapsed }) => {
   const [stats, setStats] = useState({ streak: 0, totalDays: 0, noteCount: 0, sessionStart: null });
   const [timeLeft, setTimeLeft] = useState(null);
   const [streakSecured, setStreakSecured] = useState(false);
-
+  const [progress, setProgress] = useState(0); // 0 to 1
 
   useEffect(() => {
     async function loadStats() {
@@ -20,7 +21,6 @@ const StudyStats = ({ isCollapsed, setIsCollapsed}) => {
     loadStats();
   }, []);
 
-  // Countdown timer
   useEffect(() => {
     if (!stats.sessionStart) return;
     const interval = setInterval(async () => {
@@ -29,6 +29,7 @@ const StudyStats = ({ isCollapsed, setIsCollapsed}) => {
       if (remaining <= 0) {
         setStreakSecured(true);
         setTimeLeft(null);
+        setProgress(1);
         clearInterval(interval);
         await window.electronAPI.secureStreak();
         const updatedStats = await window.electronAPI.getStats();
@@ -37,220 +38,212 @@ const StudyStats = ({ isCollapsed, setIsCollapsed}) => {
         const mins = Math.floor(remaining / 60000);
         const secs = Math.floor((remaining % 60000) / 1000);
         setTimeLeft(`${mins}:${secs.toString().padStart(2, '0')}`);
+        setProgress(elapsed / THIRTY_MINUTES);
       }
     }, 1000);
     return () => clearInterval(interval);
   }, [stats.sessionStart]);
 
-  // Tree generation based on stats
-  const generateTree = () => {
-    const noteCount = stats.noteCount || 0;
-    const streak = stats.streak || 0;
-    const branchCount = Math.min(2 + Math.floor(noteCount / 2), 8);
-    const branchLength = Math.min(40 + streak * 8, 120);
+  // progress 0→1 drives the plant growth
+  // 0.00 - 0.15: just seed in soil
+  // 0.15 - 0.40: tiny sprout appears
+  // 0.40 - 0.70: stem grows, first leaf
+  // 0.70 - 1.00: second leaf, small mango bud
+  const seedY = 200;
+  const soilY = 220;
 
-    const branches = [];
-    const angles = [-60, -30, -80, -15, -45, -70, -25, -50];
-    const sides = ['left', 'right', 'left', 'right', 'left', 'right', 'left', 'right'];
-    const heights = [0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75];
+  const stemHeight = progress < 0.15 ? 0 : Math.min(((progress - 0.15) / 0.85) * 120, 120);
+  const stemTopY = seedY - stemHeight;
 
-    for (let i = 0; i < branchCount; i++) {
-      const side = sides[i];
-      const heightPercent = heights[i];
-      const trunkX = 300;
-      const trunkTopY = 80;
-      const trunkBottomY = 420;
-      const trunkY = trunkTopY + (trunkBottomY - trunkTopY) * heightPercent;
-      const angle = side === 'left' ? angles[i] : -angles[i];
-      const angleRad = (angle * Math.PI) / 180;
-      const endX = trunkX + Math.cos(angleRad) * branchLength;
-      const endY = trunkY + Math.sin(angleRad) * branchLength;
+  const showLeaf1 = progress >= 0.4;
+  const leaf1Opacity = progress < 0.4 ? 0 : Math.min((progress - 0.4) / 0.15, 1);
+  const leaf1Scale = leaf1Opacity;
 
-      // sub branches
-      const subBranches = [];
-      if (noteCount > 3) {
-        const subAngle1 = angle - 25;
-        const subAngle2 = angle + 25;
-        const subLength = branchLength * 0.55;
-        [subAngle1, subAngle2].forEach((sa, idx) => {
-          const saRad = (sa * Math.PI) / 180;
-          const subEndX = endX + Math.cos(saRad) * subLength;
-          const subEndY = endY + Math.sin(saRad) * subLength;
-          subBranches.push({ x1: endX, y1: endY, x2: subEndX, y2: subEndY, idx });
+  const showLeaf2 = progress >= 0.65;
+  const leaf2Opacity = progress < 0.65 ? 0 : Math.min((progress - 0.65) / 0.15, 1);
+  const leaf2Scale = leaf2Opacity;
 
-          // mangos at sub branch tips
-          if (noteCount > 5) {
-            branches.push({ type: 'mango', x: subEndX, y: subEndY });
-          }
-        });
-      }
+  const showBud = progress >= 0.85;
+  const budOpacity = progress < 0.85 ? 0 : Math.min((progress - 0.85) / 0.15, 1);
 
-      branches.push({ type: 'branch', x1: trunkX, y1: trunkY, x2: endX, y2: endY, subBranches });
+  const seedOpacity = progress < 0.3 ? 1 : Math.max(1 - (progress - 0.3) / 0.2, 0);
 
-      // mango at main branch tip
-      if (noteCount > 1) {
-        branches.push({ type: 'mango', x: endX, y: endY });
-      }
-    }
+  const dashOffset = CIRCUMFERENCE * (1 - progress);
 
-    return { branches, branchLength };
-  };
-
-  const { branches } = generateTree();
+  const caption = streakSecured
+    ? 'Your seedling is ready. Keep studying to help it grow!'
+    : progress === 0
+    ? 'Your seed is waiting. Start studying to watch it sprout.'
+    : progress < 0.15
+    ? 'The seed is warming up...'
+    : progress < 0.4
+    ? 'A tiny sprout is emerging!'
+    : progress < 0.7
+    ? 'Your seedling is growing its first leaves.'
+    : progress < 1
+    ? 'Almost there — a bud is forming!'
+    : 'Your seedling has sprouted!';
 
   return (
     <>
-        <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-        <div className="stats-container" style={{ marginLeft: isCollapsed ? '70px' : '240px' }}>
-        <h1 className="stats-title">Study Statistics</h1>
+      <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+      <div
+        className="stats-container"
+        style={{ marginLeft: isCollapsed ? '72px' : '220px' }}
+      >
+        <div className="stats-header">
+          <div className="stats-eyebrow">Your Progress</div>
+          <h1 className="stats-title">Study <em>Statistics</em></h1>
+        </div>
 
         {/* STAT CARDS */}
         <div className="stats-cards">
-            <div className="stat-card">
+          <div className="stat-card">
             <div className="stat-value">{stats.streak}</div>
             <div className="stat-label">Day Streak</div>
-            </div>
-            <div className="stat-card">
+          </div>
+          <div className="stat-card">
             <div className="stat-value">{stats.noteCount}</div>
             <div className="stat-label">Notes Created</div>
-            </div>
-            <div className="stat-card">
+          </div>
+          <div className="stat-card">
             <div className="stat-value">{stats.totalDays}</div>
             <div className="stat-label">Total Days</div>
+          </div>
+          <div className={`stat-card ${streakSecured ? 'secured' : ''}`}>
+            <div className="stat-value">
+              {streakSecured ? 'Done' : timeLeft || '--:--'}
             </div>
-            <div className={`stat-card ${streakSecured ? 'secured' : ''}`}>
-            <div className="stat-value">{streakSecured ? 'Done!' : timeLeft || '--:--'}</div>
-            <div className="stat-label">{streakSecured ? 'Streak Secured' : 'Until Streak Counts'}</div>
+            <div className="stat-label">
+              {streakSecured ? 'Streak Secured' : 'Until Streak'}
             </div>
+          </div>
         </div>
 
-        {/* MANGO TREE */}
-        <div className="tree-container">
-            <svg width="600" height="500" viewBox="0 0 600 500" className="tree-svg">
-            {/* Sky gradient */}
+        {/* SEED / SPROUT */}
+        <div className="seed-section">
+
+          {/* Progress ring */}
+          <div className="progress-ring-wrap">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle className="progress-ring-bg" cx="60" cy="60" r="52" />
+              <circle
+                className="progress-ring-fill"
+                cx="60" cy="60" r="52"
+                strokeDasharray={CIRCUMFERENCE}
+                strokeDashoffset={dashOffset}
+              />
+            </svg>
+            <div className="progress-ring-label">
+              <span className="progress-ring-time">
+                {streakSecured ? '100%' : `${Math.round(progress * 100)}%`}
+              </span>
+              <span className="progress-ring-sub">focused</span>
+            </div>
+          </div>
+
+          {/* Sprouting plant SVG */}
+          <svg
+            width="280"
+            height="260"
+            viewBox="0 0 280 260"
+            className="seed-svg"
+          >
             <defs>
-                <radialGradient id="groundGradient" cx="50%" cy="50%">
-                <stop offset="0%" stopColor="#8B6914" stopOpacity="0.6" />
+              <radialGradient id="soilGrad" cx="50%" cy="40%">
+                <stop offset="0%" stopColor="#8B6914" stopOpacity="0.5" />
                 <stop offset="100%" stopColor="#8B6914" stopOpacity="0" />
-                </radialGradient>
-                <filter id="glow">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                <feMerge>
-                    <feMergeNode in="coloredBlur" />
-                    <feMergeNode in="SourceGraphic" />
-                </feMerge>
-                </filter>
+              </radialGradient>
             </defs>
 
-            {/* Ground shadow */}
-            <ellipse cx="300" cy="435" rx="60" ry="12" fill="url(#groundGradient)" />
+            {/* Soil */}
+            <ellipse cx="140" cy={soilY + 18} rx="70" ry="18" fill="#C4973A" opacity="0.25" />
+            <ellipse cx="140" cy={soilY + 14} rx="52" ry="12" fill="#A0782A" opacity="0.2" />
 
-            {/* TRUNK */}
-            <path
-                d="M 285 430 C 283 380 288 320 290 260 C 292 200 295 150 300 80"
-                stroke="#6B4226"
-                strokeWidth="18"
-                fill="none"
-                strokeLinecap="round"
-            />
-            <path
-                d="M 300 430 C 300 380 302 320 303 260 C 304 200 305 150 300 80"
-                stroke="#8B5E3C"
-                strokeWidth="10"
-                fill="none"
-                strokeLinecap="round"
-                opacity="0.5"
-            />
+            {/* Seed */}
+            <g opacity={seedOpacity}>
+              <ellipse cx="140" cy={seedY + 10} rx="14" ry="10" fill="#8B5E3C" />
+              <ellipse cx="137" cy={seedY + 8} rx="6" ry="4" fill="#A0784A" opacity="0.5" />
+            </g>
 
-            {/* BRANCHES */}
-            {branches.filter(b => b.type === 'branch').map((branch, i) => (
-                <g key={i}>
+            {/* Stem */}
+            {stemHeight > 0 && (
+              <line
+                x1="140" y1={seedY + 8}
+                x2="140" y2={stemTopY}
+                stroke="#5C8A6E"
+                strokeWidth="4"
+                strokeLinecap="round"
+              />
+            )}
+
+            {/* Leaf 1 — left */}
+            {showLeaf1 && (
+              <g
+                transform={`translate(140, ${stemTopY + stemHeight * 0.4}) scale(${leaf1Scale})`}
+                style={{ transformOrigin: '140px 0px' }}
+                opacity={leaf1Opacity}
+              >
+                <ellipse
+                  cx="-18" cy="-8"
+                  rx="22" ry="11"
+                  fill="#5C8A6E"
+                  transform="rotate(-30, -18, -8)"
+                />
                 <line
-                    x1={branch.x1} y1={branch.y1}
-                    x2={branch.x2} y2={branch.y2}
-                    stroke="#6B4226"
-                    strokeWidth="7"
-                    strokeLinecap="round"
-                    className="branch-line"
-                    style={{ animationDelay: `${i * 0.15}s` }}
+                  x1="0" y1="0"
+                  x2="-30" y2="-14"
+                  stroke="#4A7A5C"
+                  strokeWidth="1.5"
+                  opacity="0.6"
                 />
-                {branch.subBranches?.map((sub, j) => (
-                    <line
-                    key={j}
-                    x1={sub.x1} y1={sub.y1}
-                    x2={sub.x2} y2={sub.y2}
-                    stroke="#7A5230"
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                    className="branch-line"
-                    style={{ animationDelay: `${i * 0.15 + 0.3}s` }}
-                    />
-                ))}
-                </g>
-            ))}
+              </g>
+            )}
 
-            {/* LEAVES cluster around branch areas */}
-            {branches.filter(b => b.type === 'branch').map((branch, i) => (
-                <g key={`leaves-${i}`}>
+            {/* Leaf 2 — right */}
+            {showLeaf2 && (
+              <g
+                transform={`translate(140, ${stemTopY + stemHeight * 0.2}) scale(${leaf2Scale})`}
+                style={{ transformOrigin: '140px 0px' }}
+                opacity={leaf2Opacity}
+              >
                 <ellipse
-                    cx={branch.x2}
-                    cy={branch.y2 - 10}
-                    rx="22"
-                    ry="16"
-                    fill="#4CAF50"
-                    opacity="0.85"
-                    className="leaf-cluster"
-                    style={{ animationDelay: `${i * 0.15 + 0.2}s` }}
+                  cx="18" cy="-10"
+                  rx="20" ry="10"
+                  fill="#4A7A5C"
+                  transform="rotate(25, 18, -10)"
                 />
+                <line
+                  x1="0" y1="0"
+                  x2="28" y2="-16"
+                  stroke="#3A6A4C"
+                  strokeWidth="1.5"
+                  opacity="0.6"
+                />
+              </g>
+            )}
+
+            {/* Mango bud at tip */}
+            {showBud && (
+              <g opacity={budOpacity}>
                 <ellipse
-                    cx={branch.x2 - 12}
-                    cy={branch.y2 - 5}
-                    rx="16"
-                    ry="12"
-                    fill="#66BB6A"
-                    opacity="0.75"
-                    className="leaf-cluster"
-                    style={{ animationDelay: `${i * 0.15 + 0.25}s` }}
+                  cx="140" cy={stemTopY - 10}
+                  rx="8" ry="11"
+                  fill="#E8803A"
                 />
                 <ellipse
-                    cx={branch.x2 + 10}
-                    cy={branch.y2 - 8}
-                    rx="14"
-                    ry="11"
-                    fill="#388E3C"
-                    opacity="0.8"
-                    className="leaf-cluster"
-                    style={{ animationDelay: `${i * 0.15 + 0.3}s` }}
+                  cx="138" cy={stemTopY - 12}
+                  rx="4" ry="5"
+                  fill="#F5A060"
+                  opacity="0.6"
                 />
-                </g>
-            ))}
+              </g>
+            )}
+          </svg>
 
-            {/* MANGOS */}
-            {branches.filter(b => b.type === 'mango').map((mango, i) => (
-                <g key={`mango-${i}`} filter="url(#glow)" className="mango" style={{ animationDelay: `${i * 0.2 + 0.5}s` }}>
-                <ellipse cx={mango.x} cy={mango.y + 10} rx="9" ry="12" fill="#FF9F43" />
-                <ellipse cx={mango.x - 2} cy={mango.y + 8} rx="5" ry="7" fill="#FFB347" opacity="0.6" />
-                <line x1={mango.x} y1={mango.y} x2={mango.x} y2={mango.y - 5} stroke="#4CAF50" strokeWidth="2" />
-                </g>
-            ))}
-
-            {/* Top leaf canopy */}
-            <ellipse cx="300" cy="75" rx="35" ry="25" fill="#4CAF50" opacity="0.9" className="leaf-cluster" />
-            <ellipse cx="285" cy="85" rx="25" ry="18" fill="#66BB6A" opacity="0.8" className="leaf-cluster" />
-            <ellipse cx="315" cy="82" rx="22" ry="16" fill="#388E3C" opacity="0.85" className="leaf-cluster" />
-            </svg>
-
-            <p className="tree-caption">
-            {stats.noteCount === 0
-                ? 'Create your first note to grow your tree!'
-                : stats.noteCount < 3
-                ? 'Your tree is just sprouting! Keep going!'
-                : stats.noteCount < 6
-                ? 'Looking good! Your tree is growing!'
-                : 'Your mango tree is flourishing!'}
-            </p>
+          <p className="seed-caption">{caption}</p>
         </div>
-        </div>
+      </div>
     </>
   );
 };

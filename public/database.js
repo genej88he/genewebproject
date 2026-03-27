@@ -64,7 +64,7 @@ function updateNote(id, updates) {
       WHERE id = ?
     `);
     
-    return stmt.run(updates.text || updates.title, updates.content, id);
+    return stmt.run(updates.text || updates.title || 'Untitled', updates.content, id);
 }
 
 function deleteNote(id) {

@@ -150,7 +150,7 @@ const Workspace = ({seeds, setSeeds}) => {
   return (
     <>
       <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
-      <div className="workspace-container" style={{ marginLeft: isCollapsed ? '70px' : '240px' }}>
+      <div className="workspace-container" style={{ marginLeft: isCollapsed ? '72px' : '220px' }}>
         <div className="workspace-controls">
           <div className="breadcrumb">
             {openFolderId && (

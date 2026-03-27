@@ -75,6 +75,8 @@ const TextDoc = ({seeds, setSeeds}) => {
 
 
   const handleSpeech = () => {
+    console.log('SpeechRecognition:', window.SpeechRecognition);
+    console.log('webkitSpeechRecognition:', window.webkitSpeechRecognition);
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert('Speech recognition not supported in this browser.');
@@ -97,6 +99,10 @@ const TextDoc = ({seeds, setSeeds}) => {
         .map(r => r[0].transcript)
         .join(' ');
       setContent(prev => prev + ' ' + transcript);
+    };
+
+    recognition.onerror = (e) => {
+      console.log('Speech error:', e.error);
     };
 
     recognition.onend = () => setIsListening(false);

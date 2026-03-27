@@ -37,7 +37,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   updateNote: (id, updates) => {
     const sanitizedUpdates = {
-      ...(updates.title !== undefined && { title: sanitizeString(updates.title, 500) }),
+      ...(updates.title !== undefined && { title: sanitizeString(updates.title, 500) || 'Untitled'}),
       ...(updates.content !== undefined && { content: sanitizeString(updates.content, 100000) }),
     }
     return safeInvoke('update-note', id, sanitizedUpdates)
@@ -46,7 +46,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   deleteNote: (id) => safeInvoke('delete-note', id),
   getStats: () => safeInvoke('get-stats'),
   secureStreak: () => safeInvoke('secure-streak'),
-  
+
   generateTest: (options) => {
     if (!options || typeof options.prompt !== 'string') {
       return Promise.reject(new Error('generateTest: prompt must be a string'))

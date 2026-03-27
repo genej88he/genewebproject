@@ -1,233 +1,256 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --sidebar-bg: #1A1612;
+  --sidebar-text: #C4B99A;
+  --sidebar-active-bg: rgba(232, 128, 58, 0.15);
+  --sidebar-active-text: #E8803A;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+  --sidebar-border: rgba(255, 255, 255, 0.07);
+  --accent: #E8803A;
+}
+
 .sidebar {
-    width: 240px;
-    height: 100vh;
-    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-    display: flex;
-    flex-direction: column;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 1000;
-    transition: all 0.3s ease;
-    overflow: hidden;  /* add this - prevents anything from pushing out */ 
-  }
-  
-  .sidebar.collapsed {
-    width: 100px;
-  }
-  
-  .sidebar-header {
-    padding: 24px 10px;
-    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-    display: flex;
-    flex-direction: column; /* Stack vertically */
-    gap: 12px;
-    transition: all 0.3s ease;
-  }
-  
-  .collapse-btn {
-    width: 40px; /* Increased from 28px */
-    height: 40px; /* Increased from 28px */
-    background: transparent; /* Changed from gradient to look cleaner */
-    border: none;
-    border-radius: 6px;
-    color: white;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    padding-left: 20px;
-    justify-content: center; /* Aligns the icon to the left */
-    transition: all 0.2s ease;
-    flex-shrink: 0; /* Prevent shrinking */
-    transition: all 0.4s ease;
-    
+  width: 220px;
+  height: 100vh;
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
 
-  }
+.sidebar.collapsed { width: 72px; }
 
-  .sidebar.collapsed .collapse-btn {
-    padding-left: 0px;
-    justify-content: center;  /* center when collapsed */
-    width: 100%;              /* full width so it centers properly */
-  }
+/* ── HEADER ── */
+.sidebar-header {
+  padding: 18px 14px;
+  border-bottom: 1px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  min-height: 60px;
+}
 
-  .file-icon-img2 {
-    width: 35px; /* Set specific width */
-    height: auto; /* Maintain aspect ratio */
-  }
+.sidebar.collapsed .sidebar-header {
+  justify-content: center;
+  padding: 18px 10px;
+}
 
-  .app-name {
-    color: white;
-    font-size: 18px;
-    font-weight: 700;
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    transition: opacity 0.3s ease;
-    opacity: 1;
-    position: absolute;  /* so they overlap */
-  }
-  
-  .logo-wrapper {
-    padding: 10px;
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    flex: 1;
-    position: relative;  /* needed for absolute children */
-    min-height: 30px;    /* so the wrapper doesn't collapse to 0 */
-  }
+.collapse-btn {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
 
-  .label-hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
+.collapse-btn:hover { background: rgba(255, 255, 255, 0.08); }
 
-  .sidebar-logo {
-    width: 30px;
-    height: auto;
-    transition: opacity 0.3s ease;
-    opacity: 1;
-  }
-  
-  .sidebar-nav {
-    flex: 1;
-    padding: 20px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    overflow-y: auto;
-    flex-shrink: 0;
-  }
-  
-  .sidebar-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: transparent;
-    border: none;
-    border-radius: 8px;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    white-space: nowrap;
-    height: 44px;        /* add this */
-    min-height: 44px;    /* add this */
-    width: 100%;         /* add this */
-    box-sizing: border-box; /* add this */
-  }
-  
-  .sidebar.collapsed .sidebar-item {
-    justify-content: center;
-    padding: 12px;
-  }
-  
-  .sidebar-item:hover:not(.disabled) {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-  }
-  
-  .sidebar-item.active {
-    background: rgba(255, 140, 66, 0.2);
-    color: #ff9f43;
-    font-weight: 600;
-  }
-  
-  .sidebar-item.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-  
-  .sidebar-icon {
-    font-size: 20px;
-  }
-  
-  .sidebar-label {
-    flex: 1;
-    transition: opacity 0.3s ease;
-    opacity: 1;
-  }
-  
-  .sidebar-label.label-hidden {
-    opacity: 0;
-    pointer-events: none;  /* so hidden labels can't be clicked */
-  }
-  
-  /* STREAK TIMER */
-  .streak-timer {
-    padding: 12px 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
+.file-icon-img2 {
+  width: 26px;
+  height: auto;
+  opacity: 0.85;
+}
 
-  .streak-countdown,
-  .streak-secured {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    min-height: 40px;  /* keeps height consistent */
-  }
+.logo-wrapper {
+  flex: 1;
+  position: relative;
+  min-height: 22px;
+  overflow: hidden;
+}
 
-  .streak-countdown {
-    background: rgba(255, 255, 255, 0.05);
-  }
+.sidebar.collapsed .logo-wrapper {
+  display: none;
+}
 
-  .streak-secured {
-    background: rgba(255, 159, 67, 0.2);
-    color: #ff9f43;
-    font-size: 13px;
-    font-weight: 600;
-  }
+.app-name {
+  color: #F5F0E8;
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0;
+  letter-spacing: -0.3px;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  transition: opacity 0.25s ease;
+  white-space: nowrap;
+}
 
-  .streak-fire {
-    font-size: 18px;
-  }
+.label-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
 
-  .streak-text {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 13px;
-    font-weight: 500;
-    white-space: nowrap;
-  }
+/* ── NAV ── */
+.sidebar-nav {
+  flex: 1;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 
-  .mango-fire-icon {
-    width: 45px;
-    height: auto;
-  }
+.sidebar-nav::-webkit-scrollbar { display: none; }
 
-  .sidebar-footer {
-    padding: 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .user-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    min-height: 40px;
-  }
-  
-  .sidebar.collapsed .user-info {
-    justify-content: center;
-  }
-  
-  .user-avatar {
-    width: 45px;
-    height: auto;
-  }
-  
-  .user-name {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 14px;
-    font-weight: 500;
-    white-space: nowrap;
-  }
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--sidebar-text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  white-space: nowrap;
+  width: 100%;
+  height: 40px;
+  min-height: 40px;
+  box-sizing: border-box;
+}
+
+.sidebar.collapsed .sidebar-item {
+  justify-content: center;
+  padding: 9px;
+}
+
+.sidebar-item:hover:not(.disabled) {
+  background: var(--sidebar-hover-bg);
+  color: #F5F0E8;
+}
+
+.sidebar-item.active {
+  background: var(--sidebar-active-bg);
+  color: var(--sidebar-active-text);
+  font-weight: 500;
+}
+
+.sidebar-item.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.sidebar-icon {
+  font-size: 15px;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sidebar-label {
+  flex: 1;
+  transition: opacity 0.25s ease;
+  opacity: 1;
+}
+
+.sidebar-label.label-hidden {
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+}
+
+/* ── STREAK ── */
+.streak-timer {
+  padding: 10px;
+  border-top: 1px solid var(--sidebar-border);
+}
+
+.streak-countdown,
+.streak-secured {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  min-height: 42px;
+}
+
+.streak-countdown { background: rgba(255, 255, 255, 0.04); }
+
+.streak-secured {
+  background: rgba(232, 128, 58, 0.12);
+  border: 1px solid rgba(232, 128, 58, 0.2);
+  color: var(--accent);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.streak-fire {
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.streak-text {
+  color: var(--sidebar-text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.mango-fire-icon {
+  width: 28px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+/* ── FOOTER ── */
+.sidebar-footer {
+  padding: 10px;
+  border-top: 1px solid var(--sidebar-border);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  min-height: 40px;
+}
+
+.user-info:hover { background: var(--sidebar-hover-bg); }
+
+.sidebar.collapsed .user-info {
+  justify-content: center;
+  padding: 8px;
+}
+
+.user-avatar {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.user-name {
+  color: var(--sidebar-text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  white-space: nowrap;
+}
