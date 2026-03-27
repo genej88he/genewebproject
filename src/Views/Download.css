@@ -1,0 +1,163 @@
+.download-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fff5e6 0%, #ffe4cc 100%);
+  }
+  
+  .download-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 20px;
+    text-align: center;
+  }
+  
+  .download-container h1 {
+    font-size: 3rem;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 60px;
+  }
+  
+  .download-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+  }
+  
+  .download-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .download-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  }
+  
+  .os-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+  }
+  
+  .download-card h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .download-card p {
+    color: #666;
+    margin-bottom: 25px;
+  }
+  
+  .download-btn {
+    width: 100%;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .download-btn.mac {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .download-btn.windows {
+    background: linear-gradient(135deg, #0078d4 0%, #1e88e5 100%);
+  }
+  
+  .download-btn.linux {
+    background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+  }
+  
+  .download-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .file-info {
+    font-size: 0.85rem;
+    font-weight: 400;
+    opacity: 0.9;
+  }
+  
+  .system-requirements {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 600px;
+    margin: 0 auto 40px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .system-requirements h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .system-requirements ul {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+  }
+  
+  .system-requirements li {
+    padding: 8px 0;
+    color: #666;
+    position: relative;
+    padding-left: 25px;
+  }
+  
+  .system-requirements li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #ff8c42;
+    font-weight: bold;
+  }
+  
+  .help-section {
+    margin-top: 40px;
+  }
+  
+  .help-section p {
+    color: #666;
+    font-size: 1rem;
+  }
+  
+  .help-section a {
+    color: #ff8c42;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .help-section a:hover {
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 768px) {
+    .download-container h1 {
+      font-size: 2rem;
+    }
+  
+    .download-options {
+      grid-template-columns: 1fr;
+    }
+  }

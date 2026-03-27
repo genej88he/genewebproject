@@ -1,0 +1,95 @@
+.pricing-wholepage {
+  background: linear-gradient(135deg, #fff5e6 0%, #ffe4cc 100%);
+}
+.pricing-container {
+    padding: 60px 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .pricing-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    padding: 100px 60px 0px 60px;  /* Changed: Added more top padding (120px instead of 80px) */
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .pricing-grid {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+  
+  .pricing-card {
+    border: 1px solid #e0e0e0;
+    background: #f9f4f4;
+    border-radius: 16px;
+    padding: 40px;
+    width: 300px;
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+  
+  .pricing-card.featured {
+    border: 2px solid #ff8c00; /* Mango Orange */
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+  
+  .badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ff8c00;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+  
+  .price {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 20px 0;
+  }
+  
+  .price span {
+    font-size: 1rem;
+    color: #666;
+  }
+  
+  .features {
+    list-style: none;
+    padding: 0;
+    margin: 30px 0;
+    text-align: left;
+  }
+  
+  .features li {
+    margin-bottom: 12px;
+    color: #444;
+  }
+  
+  .plan-button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #333;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .featured .plan-button {
+    background: #ff8c00;
+  }
+  
+  .plan-button:hover {
+    opacity: 0.9;
+  }

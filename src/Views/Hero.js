@@ -1,20 +1,42 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Hero.css';
-import { Link } from 'react-router-dom';
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
-    <section className="hero-section">
-      <h1 className="hero-main-title">Multiply your thoughts for those who note</h1>
-      <p className="hero-description">
-        The all-in-one workspace for your ideas, research, and daily journals. 
-        From raw notes to polished projects, Mango Seed keeps your mind organized.
-      </p>
-      <div className="hero-action-area">
-        <Link to="/workspace" className="btn-black">
-          Try Mango Seed free
-        </Link>
-        <button className="btn-light">See features</button>
+    <section className="hero">
+      <div className="hero-content">
+        <h1 className="hero-title">
+          Study Smarter with <span className="highlight">Mango Seed</span>
+        </h1>
+        <p className="hero-subtitle">
+          Your visual workspace for organizing lecture notes, documents, and study materials.
+          Drag, drop, and never lose track of your files again.
+        </p>
+        <div className="hero-buttons">
+          <button 
+            className="cta-primary"
+            onClick={() => navigate('/download')}
+          >
+            Try Mango Seed for Free
+          </button>
+          <button className="cta-secondary">
+            Watch Demo
+          </button>
+        </div>
+        <p className="hero-note">
+          Available for macOS, Windows, and Linux
+        </p>
+      </div>
+      
+      <div className="hero-image">
+        <div className="mockup-placeholder">
+          <div className="workspace-preview">
+            🥭 Workspace Preview
+          </div>
+        </div>
       </div>
     </section>
   );
