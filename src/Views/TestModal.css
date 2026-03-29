@@ -35,9 +35,7 @@
   flex-shrink: 0;
 }
 
-.test-modal-progress-wrap {
-  flex: 1;
-}
+.test-modal-progress-wrap { flex: 1; }
 
 .test-modal-progress-label {
   font-family: 'DM Sans', sans-serif;
@@ -233,19 +231,41 @@
   background: #F5F0E8;
   border: 1px solid #DDD5C4;
   border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13.5px;
-  color: #1A1612;
-  line-height: 1.7;
 }
 
 .key-points-label {
+  font-family: 'DM Sans', sans-serif;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 1px;
   text-transform: uppercase;
   color: #8A7E6E;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.key-points-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.key-point-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  color: #1A1612;
+  line-height: 1.6;
+}
+
+.key-point-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #E8803A;
+  flex-shrink: 0;
+  margin-top: 7px;
 }
 
 /* ── FOOTER ── */
@@ -358,21 +378,9 @@
   flex-shrink: 0;
 }
 
-.breakdown-badge.correct {
-  background: #EDF5F0;
-  color: #3A6B52;
-}
-
-.breakdown-badge.wrong {
-  background: #FEF0F0;
-  color: #B94040;
-}
-
-.breakdown-badge.open {
-  background: #F5F0E8;
-  color: #8A7E6E;
-  border: 1px solid #DDD5C4;
-}
+.breakdown-badge.correct { background: #EDF5F0; color: #3A6B52; }
+.breakdown-badge.wrong { background: #FEF0F0; color: #B94040; }
+.breakdown-badge.open { background: #F5F0E8; color: #8A7E6E; border: 1px solid #DDD5C4; }
 
 .retake-btn {
   padding: 12px 32px;

@@ -33,7 +33,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
-    webPreferences: { // settings for electron.js
+    webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
@@ -45,85 +45,60 @@ function createWindow() {
     const allowedOrigins = isDev
       ? ['http://localhost:3000']
       : [`file://${path.join(__dirname, '../build')}`];
-
     const isAllowed = allowedOrigins.some(origin => url.startsWith(origin));
-    if (!isAllowed) {
-      event.preventDefault();
-    }
+    if (!isAllowed) event.preventDefault();
   });
 
-  win.webContents.setWindowOpenHandler(() => {
-    return { action: 'deny' }
-  })
+  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
 
-  win.on('close', () => {
-    db.endSession(); // end session when app closes
-  });
+  win.on('close', () => { db.endSession(); });
 
-  // Load from localhost in development, build folder in production
   win.loadURL(
     isDev
       ? 'http://localhost:3000/workspace'
       : `file://${path.join(__dirname, '../build/index.html')}`
   );
-
-  // Open DevTools in development
-//   if (isDev) {
-//     win.webContents.openDevTools();
-//   }
 }
 
 ipcMain.handle('get-all-notes', async () => {
-  // no input, nothing to validate
   return db.getAllNotes();
 });
 
 ipcMain.handle('create-note', async (event, note) => {
-  if (!isValidNote(note)) {
-    return { success: false, error: 'Invalid note data' }
-  }
+  if (!isValidNote(note)) return { success: false, error: 'Invalid note data' };
   db.createNote(note);
   return { success: true };
 });
 
 ipcMain.handle('update-note', async (event, id, updates) => {
-  if (!isValidId(id) || !isValidUpdates(updates)) {
-    return { success: false, error: 'Invalid arguments' }
-  }
+  if (!isValidId(id) || !isValidUpdates(updates)) return { success: false, error: 'Invalid arguments' };
   db.updateNote(id, updates);
   return { success: true };
 });
 
 ipcMain.handle('delete-note', async (event, id) => {
-  if (!isValidId(id)) {
-    return { success: false, error: 'Invalid id' }
-  }
+  if (!isValidId(id)) return { success: false, error: 'Invalid id' };
   db.deleteNote(id);
   return { success: true };
 });
 
 ipcMain.handle('get-stats', async () => {
-  // no input, nothing to validate
   return db.getStats();
 });
 
-ipcMain.handle('secure-streak', async () => {
-  // no input, nothing to validate
-  return db.secureStreak();
+ipcMain.handle('secure-streak', async (event, accumulatedMs) => {
+  db.secureStreak(accumulatedMs);
+  return { success: true };
+});
+
+ipcMain.handle('get-daily-sessions', async () => {
+  return db.getDailySessions();
 });
 
 ipcMain.handle('generate-test', async (event, options) => {
-  // API key lives here in main.js — never in React
-  // process.env works here because main.js is Node.js, not React
   const apiKey = process.env.GEMINI_API_KEY;
-
-  if (!apiKey) {
-    return { success: false, error: 'API key not configured' }
-  }
-
-  if (!options || typeof options.prompt !== 'string') {
-    return { success: false, error: 'Invalid prompt' }
-  }
+  if (!apiKey) return { success: false, error: 'API key not configured' };
+  if (!options || typeof options.prompt !== 'string') return { success: false, error: 'Invalid prompt' };
 
   try {
     const response = await fetch(
@@ -131,30 +106,22 @@ ipcMain.handle('generate-test', async (event, options) => {
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: options.prompt }] }]
-        })
+        body: JSON.stringify({ contents: [{ parts: [{ text: options.prompt }] }] })
       }
     );
-
     if (!response.ok) {
       const errorData = await response.json();
-      return { success: false, error: errorData.error?.message || 'API request failed' }
+      return { success: false, error: errorData.error?.message || 'API request failed' };
     }
-
     const data = await response.json();
-    return { success: true, data }
-
+    return { success: true, data };
   } catch (err) {
     console.error('generate-test error:', err);
-    return { success: false, error: 'Failed to generate test' }
+    return { success: false, error: 'Failed to generate test' };
   }
 });
 
-
 app.whenReady().then(() => {
-
-  // CSP goes here, before createWindow
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
@@ -169,20 +136,13 @@ app.whenReady().then(() => {
       }
     });
   });
-
-  createWindow(); // window opens after CSP is set up
+  createWindow();
 });
 
-// Quit when all windows are closed (except on macOS)
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  if (process.platform !== 'darwin') app.quit();
 });
 
-// Re-create window on macOS when clicking dock icon
 app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });

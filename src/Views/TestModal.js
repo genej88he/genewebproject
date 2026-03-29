@@ -5,14 +5,29 @@ const TestModal = ({ questions, onClose }) => {
   const [current, setCurrent] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [revealed, setRevealed] = useState(false);
-  const [answers, setAnswers] = useState([]); // {correct: bool|null} per question
+  const [answers, setAnswers] = useState([]);
   const [done, setDone] = useState(false);
 
   const q = questions[current];
   const progress = ((current) / questions.length) * 100;
 
+  const cleanText = (text) => {
+    if (!text) return '';
+    return text
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/_{1,2}(.*?)_{1,2}/g, '$1')
+      .replace(/#{1,6}\s/g, '')
+      .replace(/>\s/g, '')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/~~(.*?)~~/g, '$1')
+      .replace(/\n{2,}/g, ' ')
+      .trim();
+  };
+
   const handleChoiceSelect = (letter) => {
-    if (selectedAnswer) return; // already answered
+    if (selectedAnswer) return;
     const isCorrect = letter === q.correctAnswer;
     setSelectedAnswer(letter);
     setAnswers(prev => [...prev, { correct: isCorrect, type: q.type }]);
@@ -53,6 +68,34 @@ const TestModal = ({ questions, onClose }) => {
     return revealed;
   };
 
+  const renderKeyPoints = (text) => {
+    if (!text) return null;
+    return cleanText(text)
+      .split(/[.\n]/)
+      .filter(line => line.trim().length > 10)
+      .slice(0, 4)
+      .map((line, i) => {
+        const cleaned = line
+          .replace(/^[\s]*[-*•]\s*/, '')
+          .replace(/^[\s]*\d+\.\s*/, '')
+          .trim();
+        if (!cleaned) return null;
+        return (
+          <div key={i} className="key-point-item">
+            <span className="key-point-dot" />
+            {cleaned}
+          </div>
+        );
+      });
+  };
+
+  const renderExplanation = (text) => {
+    if (!text) return null;
+    const cleaned = cleanText(text);
+    const sentences = cleaned.split('.').filter(s => s.trim().length > 0);
+    return sentences.slice(0, 2).join('.') + '.';
+  };
+
   if (done) {
     return (
       <div className="test-modal-overlay">
@@ -74,9 +117,7 @@ const TestModal = ({ questions, onClose }) => {
                   <div className="results-score">
                     {mcScore}<span>/{mcTotal}</span>
                   </div>
-                  <div className="results-label">
-                    multiple choice correct
-                  </div>
+                  <div className="results-label">multiple choice correct</div>
                 </>
               )}
 
@@ -85,7 +126,7 @@ const TestModal = ({ questions, onClose }) => {
                   const a = answers[i];
                   return (
                     <div key={i} className="breakdown-item">
-                      <span className="bq">Q{i + 1}: {q.question.substring(0, 60)}{q.question.length > 60 ? '…' : ''}</span>
+                      <span className="bq">Q{i + 1}: {cleanText(q.question).substring(0, 60)}{q.question.length > 60 ? '…' : ''}</span>
                       <span className={`breakdown-badge ${a?.correct === true ? 'correct' : a?.correct === false ? 'wrong' : 'open'}`}>
                         {a?.correct === true ? '✓ Correct' : a?.correct === false ? '✗ Wrong' : 'Open'}
                       </span>
@@ -124,7 +165,7 @@ const TestModal = ({ questions, onClose }) => {
           <div className="question-type-tag">
             {q.type === 'mc' ? 'Multiple Choice' : q.type === 'short' ? 'Short Answer' : 'Essay'}
           </div>
-          <div className="question-text">{q.question}</div>
+          <div className="question-text">{cleanText(q.question)}</div>
 
           {/* MULTIPLE CHOICE */}
           {q.type === 'mc' && (
@@ -145,7 +186,7 @@ const TestModal = ({ questions, onClose }) => {
                       disabled={!!selectedAnswer}
                     >
                       <span className="choice-letter">{letter}</span>
-                      {text}
+                      {cleanText(text)}
                     </button>
                   );
                 })}
@@ -156,30 +197,32 @@ const TestModal = ({ questions, onClose }) => {
                   <div className="feedback-label">
                     {selectedAnswer === q.correctAnswer ? '✓ Correct!' : '✗ Not quite'}
                   </div>
-                  {q.explanation}
+                  {renderExplanation(q.explanation)}
                 </div>
               )}
             </>
           )}
 
           {/* SHORT ANSWER / ESSAY */}
-            {(q.type === 'short' || q.type === 'essay') && (
+          {(q.type === 'short' || q.type === 'essay') && (
             <>
-                {!revealed && (
+              {!revealed && (
                 <button className="reveal-btn" onClick={handleReveal}>
-                    Reveal answer →
+                  Reveal answer →
                 </button>
-                )}
-                {revealed && (
+              )}
+              {revealed && (
                 <div className="key-points">
-                    <div className="key-points-label">
+                  <div className="key-points-label">
                     {q.type === 'short' ? 'Key points' : 'Guidance'}
-                    </div>
-                    <div>{q.keyPoints}</div>
+                  </div>
+                  <div className="key-points-body">
+                    {renderKeyPoints(q.keyPoints)}
+                  </div>
                 </div>
-                )}
+              )}
             </>
-            )}
+          )}
         </div>
 
         {/* FOOTER */}

@@ -1,25 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Sidebar.css';
 import orangeSidebar from '../assets/images/orangesidebar.png';
-import mangoSeed from '../assets/images/mangoseed.png';
 import mangoFire from '../assets/images/mangofire.png';
+import timerState from './TimerState';
 
 const THIRTY_MINUTES = 30 * 60 * 1000;
+const IDLE_THRESHOLD = 3 * 60 * 1000;
 
-const Sidebar = ({isCollapsed, setIsCollapsed}) => {
+// Module-level — persists across re-renders and page changes
+
+const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const [timeLeft, setTimeLeft] = useState(null);
   const [streakSecured, setStreakSecured] = useState(false);
   const [sessionStart, setSessionStart] = useState(null);
-
+  const [isPaused, setIsPaused] = useState(false);
 
   const menuItems = [
     { id: 'workspace', label: 'Workspace', path: '/workspace' },
     { id: 'test-gen', label: 'Test Generator', path: '/test-generator' },
-    { id: 'stats', label: 'Study Statistics', path: '/stats'},
+    { id: 'stats', label: 'Study Statistics', path: '/stats' },
     { id: 'settings', label: 'Settings', path: '/settings', disabled: true },
   ];
 
@@ -29,19 +32,53 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
         const stats = await window.electronAPI.getStats();
         if (stats?.sessionStart) {
           setSessionStart(stats.sessionStart);
+          timerState.lastTickTime = Date.now();
         }
       }
     }
     loadStats();
   }, []);
 
-  // Countdown timer
+  const handleActivity = useCallback(() => {
+    const now = Date.now();
+    const idleFor = now - timerState.lastActiveTime;
+
+    if (timerState.paused && idleFor >= IDLE_THRESHOLD) {
+      timerState.paused = false;
+      setIsPaused(false);
+      timerState.lastTickTime = now;
+    }
+
+    timerState.lastActiveTime = now; // this line was wrong — was lastTickTime
+  }, []);
+
+  useEffect(() => {
+    const events = ['mousemove', 'keydown', 'mousedown', 'scroll', 'touchstart'];
+    events.forEach(e => window.addEventListener(e, handleActivity, { passive: true }));
+    return () => events.forEach(e => window.removeEventListener(e, handleActivity));
+  }, [handleActivity]);
+
   useEffect(() => {
     if (!sessionStart) return;
 
     const interval = setInterval(async () => {
-      const elapsed = Date.now() - sessionStart;
-      const remaining = THIRTY_MINUTES - elapsed;
+      const now = Date.now();
+      const idleFor = now - timerState.lastActiveTime;
+
+      if (idleFor >= IDLE_THRESHOLD) {
+        if (!timerState.paused) {
+          timerState.paused = true;
+          setIsPaused(true);
+        }
+        timerState.lastTickTime = now;
+        return;
+      }
+
+      const tickDelta = now - (timerState.lastTickTime || now);
+      timerState.accumulatedTime += tickDelta;
+      timerState.lastTickTime = now;
+
+      const remaining = THIRTY_MINUTES - timerState.accumulatedTime;
 
       if (remaining <= 0) {
         setStreakSecured(true);
@@ -62,12 +99,12 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
   return (
     <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
-        <button 
-            className="collapse-btn" 
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-            {<img src={orangeSidebar} alt="sidebar" className="file-icon-img2" />}
+        <button
+          className="collapse-btn"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          <img src={orangeSidebar} alt="sidebar" className="file-icon-img2" />
         </button>
         <div className="logo-wrapper" style={{ position: 'relative' }}>
           <h3 className={`app-name ${isCollapsed ? 'label-hidden' : ''}`}>
@@ -77,7 +114,6 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
             Mango
           </h3>
         </div>
-        
       </div>
 
       <nav className="sidebar-nav">
@@ -100,20 +136,26 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
       <div className="streak-timer">
         {streakSecured ? (
           <div className="streak-secured">
-          <img src={mangoFire} alt="fire" className="mango-fire-icon" />
-          {!isCollapsed && <span>Streak secured!</span>}
-        </div>
+            <img src={mangoFire} alt="fire" className="mango-fire-icon" />
+            {!isCollapsed && <span>Streak secured!</span>}
+          </div>
+        ) : isPaused ? (
+          <div className="streak-paused">
+            <span className="streak-pause-icon">||</span>
+            {!isCollapsed && (
+              <span className="streak-text">Paused — move to resume</span>
+            )}
+          </div>
         ) : (
           <div className="streak-countdown">
             {!isCollapsed ? (
-              <>
-                <span className="streak-fire">🔥</span>
-                <span className="streak-text">
-                  {timeLeft ? `${timeLeft} left` : 'Loading...'}
-                </span>
-              </>
+              <span className="streak-text">
+                {timeLeft ? `${timeLeft} left` : 'Loading...'}
+              </span>
             ) : (
-              <span className="streak-fire">🔥</span>
+              <span className="streak-text" style={{ fontSize: '11px' }}>
+                {timeLeft || '--'}
+              </span>
             )}
           </div>
         )}

@@ -199,11 +199,6 @@
   font-weight: 500;
 }
 
-.streak-fire {
-  font-size: 17px;
-  flex-shrink: 0;
-}
-
 .streak-text {
   color: var(--sidebar-text);
   font-family: 'DM Sans', sans-serif;
@@ -253,4 +248,23 @@
   font-size: 13px;
   font-weight: 400;
   white-space: nowrap;
+}
+
+.streak-paused {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  min-height: 42px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.streak-pause-icon {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  flex-shrink: 0;
 }

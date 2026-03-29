@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './StudyStats.css';
 import Sidebar from './Sidebar.js';
+import timerState from './TimerState';
 
 const THIRTY_MINUTES = 30 * 60 * 1000;
 const CIRCUMFERENCE = 2 * Math.PI * 52; // radius 52
@@ -10,39 +11,57 @@ const StudyStats = ({ isCollapsed, setIsCollapsed }) => {
   const [timeLeft, setTimeLeft] = useState(null);
   const [streakSecured, setStreakSecured] = useState(false);
   const [progress, setProgress] = useState(0); // 0 to 1
+  
 
   useEffect(() => {
     async function loadStats() {
       if (window.electronAPI) {
         const s = await window.electronAPI.getStats();
         setStats(s);
+  
+        if (s.streakSecuredDate) {
+          const today = new Date().setHours(0, 0, 0, 0);
+          const securedDate = new Date(s.streakSecuredDate).setHours(0, 0, 0, 0);
+          if (securedDate === today) {
+            setStreakSecured(true);
+            setProgress(1);
+          }
+        }
       }
     }
     loadStats();
   }, []);
 
-  useEffect(() => {
-    if (!stats.sessionStart) return;
-    const interval = setInterval(async () => {
-      const elapsed = Date.now() - stats.sessionStart;
-      const remaining = THIRTY_MINUTES - elapsed;
-      if (remaining <= 0) {
-        setStreakSecured(true);
-        setTimeLeft(null);
-        setProgress(1);
-        clearInterval(interval);
-        await window.electronAPI.secureStreak();
-        const updatedStats = await window.electronAPI.getStats();
-        setStats(updatedStats);
-      } else {
-        const mins = Math.floor(remaining / 60000);
-        const secs = Math.floor((remaining % 60000) / 1000);
-        setTimeLeft(`${mins}:${secs.toString().padStart(2, '0')}`);
-        setProgress(elapsed / THIRTY_MINUTES);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [stats.sessionStart]);
+
+useEffect(() => {
+  if (!stats.sessionStart) return;
+  if (streakSecured) return;
+
+  const interval = setInterval(() => {
+    const today = new Date().setHours(0, 0, 0, 0);
+    const sessionDate = new Date(stats.sessionStart).setHours(0, 0, 0, 0);
+
+    if (sessionDate !== today) {
+      setProgress(0);
+      setTimeLeft(null);
+      clearInterval(interval);
+      return;
+    }
+
+    const elapsed = timerState.accumulatedTime;
+    const remaining = THIRTY_MINUTES - elapsed;
+
+    // Guard against NaN while timer hasn't started yet
+    if (remaining <= 0 || elapsed === 0) return;
+
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+    setTimeLeft(`${mins}:${secs.toString().padStart(2, '0')}`);
+    setProgress(Math.min(elapsed / THIRTY_MINUTES, 0.99));
+  }, 1000);
+
+  return () => clearInterval(interval);
+}, [stats.sessionStart, streakSecured]);
 
   // progress 0→1 drives the plant growth
   // 0.00 - 0.15: just seed in soil
